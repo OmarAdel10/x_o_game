@@ -13,6 +13,11 @@ class Apptheme {
   ); // Light buttons/inactive states
   static const Color white = Color(0xFFFFFFFF); // White text
 
+  // Inset Shadows (bottom shadows on buttons)
+  static const Color shadowBlue = Color(0xFF118C87); // Cyan button shadow
+  static const Color shadowYellow = Color(0xFFCC8B13); // Yellow button shadow
+  static const Color shadowDark = Color(0xFF10212A); // Dark container shadow
+
   // Text Colors
   static const Color primaryText = Color(0xFFFFFFFF); // White text
   static const Color secondaryText = Color(0xFFA8BFC9); // Silver text
