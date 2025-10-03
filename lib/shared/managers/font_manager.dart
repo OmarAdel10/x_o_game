@@ -28,7 +28,3 @@ class FontWeightManager {
   static const FontWeight semiBold = FontWeight.w600; // Button text, headers
   static const FontWeight bold = FontWeight.w700; // Large numbers, emphasis
 }
-
-class FontFamilyManager {
-  static const String fontFamily = 'Roboto';
-}

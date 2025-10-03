@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Apptheme {
   // App Colors
@@ -11,7 +12,7 @@ class Apptheme {
   static const Color lightSilver = Color(
     0xFFDBE8ED,
   ); // Light buttons/inactive states
-  static const Color white = Color(0xFFFFFFFF); // White text
+  static const Color white = Color(0xFFFFFFFF);
 
   // Inset Shadows (bottom shadows on buttons)
   static const Color shadowBlue = Color(0xFF118C87); // Cyan button shadow
@@ -21,8 +22,26 @@ class Apptheme {
   // Text Colors
   static const Color primaryText = Color(0xFFFFFFFF); // White text
   static const Color secondaryText = Color(0xFFA8BFC9); // Silver text
-  
+
   static ThemeData darkTheme = ThemeData(
     scaffoldBackgroundColor: primary,
+
+    inputDecorationTheme: InputDecorationTheme(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: lightBlue, width: 2),
+      ),
+      errorStyle: GoogleFonts.roboto(),
+      filled: true,
+      fillColor: deepDarkNavy,
+    ),
   );
 }

@@ -10,12 +10,16 @@ class CustomButton extends StatelessWidget {
     required this.shadowColor,
     required this.text,
     required this.onPressed,
+    this.hasPrefixIcon = false,
+    this.icon,
   });
 
   final Color backgroundColor;
   final Color shadowColor;
   final String text;
   final void Function() onPressed;
+  final bool hasPrefixIcon;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -29,19 +33,34 @@ class CustomButton extends StatelessWidget {
           color: backgroundColor,
           borderRadius: BorderRadius.circular(16.0),
           boxShadow: [
-            BoxShadow(color: shadowColor, offset: const Offset(0, 4), blurRadius: 0),
+            BoxShadow(
+              color: shadowColor,
+              offset: const Offset(0, 4),
+              blurRadius: 0,
+            ),
           ],
         ),
-        child: Center(
-          child: AutoSizeText(
-            text,
-            minFontSize: FontSizeManager.bodySmall,
-            style: TextStyle(
-              fontSize: FontSizeManager.bodyLarge,
-              fontWeight: FontWeightManager.semiBold,
-              color: Apptheme.primary,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            hasPrefixIcon
+                ? Row(
+                    children: [
+                      Icon(icon, size: 24, color: Apptheme.primary),
+                      SizedBox(width: 8),
+                    ],
+                  )
+                : const SizedBox(),
+            AutoSizeText(
+              text,
+              minFontSize: FontSizeManager.bodySmall,
+              style: TextStyle(
+                fontSize: FontSizeManager.bodyLarge,
+                fontWeight: FontWeightManager.semiBold,
+                color: Apptheme.primary,
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

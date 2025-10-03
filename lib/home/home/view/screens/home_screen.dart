@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:x_o_game/game/pvp/view/screens/player_vs_player_screen.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/assets_manager.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
@@ -61,7 +62,11 @@ class HomeScreen extends StatelessWidget {
                           backgroundColor: Apptheme.lightBlue,
                           shadowColor: Apptheme.shadowBlue,
                           text: 'NEW GAME ( VS PLAYER )',
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(
+                              context,
+                            ).pushNamed(PlayerVsPlayerScreen.routeName);
+                          },
                         ),
                         const SizedBox(height: 16),
                         CustomButton(
@@ -92,7 +97,7 @@ class HomeScreen extends StatelessWidget {
                       child: Icon(CupertinoIcons.graph_circle, size: 24),
                     ),
                   ),
-                  const SizedBox(width: 16,),
+                  const SizedBox(width: 16),
                   InkWell(
                     onTap: () {},
                     child: Container(
