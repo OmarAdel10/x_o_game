@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:x_o_game/Home/view/screens/home_screen.dart';
+import 'package:x_o_game/home/home/view/screens/home_screen.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 
 void main() {
