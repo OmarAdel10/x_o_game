@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:x_o_game/game/pvb/view/screens/player_vs_bot_screen.dart';
 import 'package:x_o_game/game/pvp/view/screens/player_vs_player_screen.dart';
 import 'package:x_o_game/home/settings/view/screens/settings_screen.dart';
+import 'package:x_o_game/home/statistics/view/screens/statistics_screen.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/assets_manager.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
@@ -89,7 +90,10 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   InkWell(
-                    onTap: () {},
+                    onTap: () => Navigator.of(
+                      context,
+                    ).pushNamed(StatisticsScreen.routeName),
+
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
