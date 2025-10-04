@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:x_o_game/game/pvb/view/screens/player_vs_bot_screen.dart';
 import 'package:x_o_game/game/pvp/view/screens/player_vs_player_screen.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/assets_manager.dart';
@@ -73,7 +74,11 @@ class HomeScreen extends StatelessWidget {
                           backgroundColor: Apptheme.lightYellow,
                           shadowColor: Apptheme.shadowYellow,
                           text: 'NEW GAME ( VS BOT )',
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(
+                              context,
+                            ).pushNamed(PlayerVsBotScreen.routeName);
+                          },
                         ),
                       ],
                     ),

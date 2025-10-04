@@ -21,14 +21,20 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       validator: validator,
       keyboardType: TextInputType.name,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
       cursorColor: Apptheme.silver,
       cursorWidth: 2,
-      decoration: InputDecoration(hint: Text(hintText, style: GoogleFonts.roboto(
+      decoration: InputDecoration(
+        hint: Text(
+          hintText,
+          style: GoogleFonts.roboto(
             color: Apptheme.secondaryText.withValues(alpha: 0.5),
             fontSize: FontSizeManager.caption,
             fontWeight: FontWeightManager.regular,
           ),
-        )),
+        ),
+      ),
       style: GoogleFonts.roboto(
         color: Apptheme.secondaryText,
         fontSize: FontSizeManager.caption,
