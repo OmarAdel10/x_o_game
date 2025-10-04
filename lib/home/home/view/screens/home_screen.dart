@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:x_o_game/game/pvb/view/screens/player_vs_bot_screen.dart';
 import 'package:x_o_game/game/pvp/view/screens/player_vs_player_screen.dart';
+import 'package:x_o_game/home/settings/view/screens/settings_screen.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/assets_manager.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
@@ -63,22 +64,18 @@ class HomeScreen extends StatelessWidget {
                           backgroundColor: Apptheme.lightBlue,
                           shadowColor: Apptheme.shadowBlue,
                           text: 'NEW GAME ( VS PLAYER )',
-                          onPressed: () {
-                            Navigator.of(
-                              context,
-                            ).pushNamed(PlayerVsPlayerScreen.routeName);
-                          },
+                          onPressed: () => Navigator.of(
+                            context,
+                          ).pushNamed(PlayerVsPlayerScreen.routeName),
                         ),
                         const SizedBox(height: 16),
                         CustomButton(
                           backgroundColor: Apptheme.lightYellow,
                           shadowColor: Apptheme.shadowYellow,
                           text: 'NEW GAME ( VS BOT )',
-                          onPressed: () {
-                            Navigator.of(
-                              context,
-                            ).pushNamed(PlayerVsBotScreen.routeName);
-                          },
+                          onPressed: () => Navigator.of(
+                            context,
+                          ).pushNamed(PlayerVsBotScreen.routeName),
                         ),
                       ],
                     ),
@@ -104,7 +101,10 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   InkWell(
-                    onTap: () {},
+                    onTap: () => Navigator.of(
+                      context,
+                    ).pushNamed(SettingsScreen.routeName),
+
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
