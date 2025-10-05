@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:x_o_game/game/flipping_coin/view/screens/flipping_coin_screen.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
 import 'package:x_o_game/shared/widgets/custom_button.dart';
@@ -13,6 +14,8 @@ class PlayerVsPlayerScreen extends StatelessWidget {
 
   final TextEditingController playerOneNameController = TextEditingController();
   final TextEditingController playerTwoNameController = TextEditingController();
+
+  final String screenName = 'Player Setup';
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +44,7 @@ class PlayerVsPlayerScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 20),
                   AutoSizeText(
-                    'Player Setup',
+                    screenName,
                     style: GoogleFonts.roboto(
                       color: Apptheme.silver,
                       fontSize: FontSizeManager.header,
@@ -129,7 +132,9 @@ class PlayerVsPlayerScreen extends StatelessWidget {
                             backgroundColor: Apptheme.lightYellow,
                             shadowColor: Apptheme.shadowYellow,
                             text: 'Flip Coin & Start',
-                            onPressed: () {},
+                            onPressed: () => Navigator.of(
+                              context,
+                            ).pushNamed(FlippingCoinScreen.routeName, arguments: screenName),
                           ),
                         ],
                       ),
