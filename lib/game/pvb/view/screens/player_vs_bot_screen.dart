@@ -20,9 +20,6 @@ class PlayerVsBotScreen extends StatefulWidget {
 
 class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
   final TextEditingController playerOneNameController = TextEditingController();
-
-  final TextEditingController playerTwoNameController = TextEditingController();
-
   int _currentIndex = 0;
 
   final String screenName = 'Bot Challenge';
@@ -119,15 +116,6 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                                   CustomTextField(
                                     controller: playerOneNameController,
                                     hintText: 'Enter Name ( or play as Guest)',
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Field Can Not Be Empty';
-                                      }
-                                      if (value.length < 3) {
-                                        return 'Name Can Not Be Less Than 3 Characters';
-                                      }
-                                      return null;
-                                    },
                                   ),
 
                                   const SizedBox(height: 16),
@@ -248,7 +236,10 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                                     onPressed: () =>
                                         Navigator.of(context).pushNamed(
                                           FlippingCoinScreen.routeName,
-                                          arguments: screenName,
+                                          arguments: {
+                                            'screenFromName' : screenName,
+                                            'playerOneName' : playerOneNameController.text,
+                                          },
                                         ),
                                   ),
                                 ],
