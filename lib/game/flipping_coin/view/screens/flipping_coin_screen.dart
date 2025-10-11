@@ -15,8 +15,11 @@ class FlippingCoinScreen extends StatelessWidget {
   final bool _animate = true;
   @override
   Widget build(BuildContext context) {
-    final String screenCommingFromName =
-        ModalRoute.of(context)!.settings.arguments as String;
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+    final String screenName = args['screenFromName']!;
+    final String playerOneName = args['playerOneName']!;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -41,7 +44,7 @@ class FlippingCoinScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 20),
                   AutoSizeText(
-                    screenCommingFromName,
+                    screenName,
                     style: GoogleFonts.roboto(
                       color: Apptheme.silver,
                       fontSize: FontSizeManager.header,
@@ -65,7 +68,7 @@ class FlippingCoinScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AutoSizeText(
-                    'Player 1 uses',
+                    '$playerOneName uses',
                     style: GoogleFonts.roboto(
                       color: Apptheme.silver,
                       fontSize: FontSizeManager.bodyMedium,

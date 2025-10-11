@@ -90,15 +90,6 @@ class PlayerVsPlayerScreen extends StatelessWidget {
                           CustomTextField(
                             controller: playerOneNameController,
                             hintText: 'Enter Name ( or play as Guest)',
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Field Can Not Be Empty';
-                              }
-                              if (value.length < 3) {
-                                return 'Name Can Not Be Less Than 3 Characters';
-                              }
-                              return null;
-                            },
                           ),
 
                           const SizedBox(height: 16),
@@ -114,15 +105,6 @@ class PlayerVsPlayerScreen extends StatelessWidget {
                           CustomTextField(
                             controller: playerTwoNameController,
                             hintText: 'Enter Name ( or play as Guest)',
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Field Can Not Be Empty';
-                              }
-                              if (value.length < 3) {
-                                return 'Name Can Not Be Less Than 3 Characters';
-                              }
-                              return null;
-                            },
                           ),
 
                           const SizedBox(height: 16),
@@ -132,9 +114,13 @@ class PlayerVsPlayerScreen extends StatelessWidget {
                             backgroundColor: Apptheme.lightYellow,
                             shadowColor: Apptheme.shadowYellow,
                             text: 'Flip Coin & Start',
-                            onPressed: () => Navigator.of(
-                              context,
-                            ).pushNamed(FlippingCoinScreen.routeName, arguments: screenName),
+                            onPressed: () => Navigator.of(context).pushNamed(
+                              FlippingCoinScreen.routeName,
+                              arguments: {
+                                'screenFromName':screenName,
+                                'playerOneName':playerOneNameController.text,
+                              },
+                            ),
                           ),
                         ],
                       ),
