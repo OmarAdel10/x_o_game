@@ -7,6 +7,7 @@ import 'package:x_o_game/home/home/view/screens/home_screen.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/assets_manager.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
+import 'package:x_o_game/shared/managers/var_manager.dart';
 
 class GameScreen extends StatelessWidget {
   static const String routeName = 'game';
@@ -121,15 +122,67 @@ class GameScreen extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          AutoSizeText(
-                            'Player 1 ( O )',
-                            maxLines: 1,
-                            style: GoogleFonts.roboto(
-                              color: Apptheme.primary,
-                              fontSize: FontSizeManager.bodySmall,
-                              fontWeight: FontWeightManager.semiBold,
+                          Container(
+                            width: double.infinity,
+                            height: MediaQuery.sizeOf(context).height * 0.065,
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Apptheme.semiDarkNavy,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Apptheme.shadowDark,
+                                  offset: const Offset(0, 3),
+                                  blurRadius: 0,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                AutoSizeText(
+                                  VarManager.playerOneName,
+                                  maxLines: 1,
+                                  style: GoogleFonts.roboto(
+                                    color: Apptheme.lightBlue,
+                                    fontSize: FontSizeManager.bodySmall,
+                                    fontWeight: FontWeightManager.semiBold,
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '[ ',
+                                      maxLines: 1,
+                                      style: GoogleFonts.roboto(
+                                        color: Apptheme.lightBlue,
+                                        fontSize: FontSizeManager.bodySmall,
+                                        fontWeight: FontWeightManager.bold,
+                                      ),
+                                    ),
+                                    Image.asset(
+                                      VarManager.playerOneSymbol == 'x'
+                                          ? AssetsManager.x
+                                          : AssetsManager.o,
+                                      width: 18,
+                                      height: 18,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    Text(
+                                      ' ]',
+                                      maxLines: 1,
+                                      style: GoogleFonts.roboto(
+                                        color: Apptheme.lightBlue,
+                                        fontSize: FontSizeManager.bodySmall,
+                                        fontWeight: FontWeightManager.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
+                          const SizedBox(height: 5),
                           Text(
                             '0',
                             style: GoogleFonts.roboto(
@@ -153,15 +206,34 @@ class GameScreen extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          AutoSizeText(
-                            'Ties',
-                            maxLines: 1,
-                            style: GoogleFonts.roboto(
-                              color: Apptheme.primary,
-                              fontSize: FontSizeManager.bodySmall,
-                              fontWeight: FontWeightManager.semiBold,
+                          Container(
+                            width: double.infinity,
+                            height: MediaQuery.sizeOf(context).height * 0.065,
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Apptheme.semiDarkNavy,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Apptheme.shadowDark,
+                                  offset: const Offset(0, 3),
+                                  blurRadius: 0,
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: AutoSizeText(
+                                'Ties',
+                                maxLines: 1,
+                                style: GoogleFonts.roboto(
+                                  color: Apptheme.silver,
+                                  fontSize: FontSizeManager.bodySmall,
+                                  fontWeight: FontWeightManager.semiBold,
+                                ),
+                              ),
                             ),
                           ),
+                          const SizedBox(height: 5,),
                           Text(
                             '0',
                             style: GoogleFonts.roboto(
@@ -185,15 +257,67 @@ class GameScreen extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          AutoSizeText(
-                            'Player 2 ( X )',
-                            maxLines: 1,
-                            style: GoogleFonts.roboto(
-                              color: Apptheme.primary,
-                              fontSize: FontSizeManager.bodySmall,
-                              fontWeight: FontWeightManager.semiBold,
+                          Container(
+                            width: double.infinity,
+                            height: MediaQuery.sizeOf(context).height * 0.065,
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Apptheme.semiDarkNavy,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Apptheme.shadowDark,
+                                  offset: const Offset(0, 3),
+                                  blurRadius: 0,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                AutoSizeText(
+                                  VarManager.playerTwoName,
+                                  maxLines: 1,
+                                  style: GoogleFonts.roboto(
+                                    color: Apptheme.lightYellow,
+                                    fontSize: FontSizeManager.bodySmall,
+                                    fontWeight: FontWeightManager.semiBold,
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '[ ',
+                                      maxLines: 1,
+                                      style: GoogleFonts.roboto(
+                                        color: Apptheme.lightYellow,
+                                        fontSize: FontSizeManager.bodySmall,
+                                        fontWeight: FontWeightManager.bold,
+                                      ),
+                                    ),
+                                    Image.asset(
+                                      VarManager.playerTwoSymbol == 'x'
+                                          ? AssetsManager.x
+                                          : AssetsManager.o,
+                                      width: 18,
+                                      height: 18,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    Text(
+                                      ' ]',
+                                      maxLines: 1,
+                                      style: GoogleFonts.roboto(
+                                        color: Apptheme.lightYellow,
+                                        fontSize: FontSizeManager.bodySmall,
+                                        fontWeight: FontWeightManager.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
+                          const SizedBox(height: 5),
                           Text(
                             '0',
                             style: GoogleFonts.roboto(

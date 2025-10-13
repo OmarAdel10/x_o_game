@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:x_o_game/game/flipping_coin/view/screens/flipping_coin_screen.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
+import 'package:x_o_game/shared/managers/var_manager.dart';
 import 'package:x_o_game/shared/widgets/custom_button.dart';
 import 'package:x_o_game/shared/widgets/custom_text_field.dart';
 
@@ -21,8 +22,6 @@ class PlayerVsBotScreen extends StatefulWidget {
 class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
   final TextEditingController playerOneNameController = TextEditingController();
   int _currentIndex = 0;
-
-  final String screenName = 'Bot Challenge';
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +65,7 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                     ),
                     const SizedBox(width: 20),
                     AutoSizeText(
-                      screenName,
+                      VarManager.playerVsBotScreenName,
                       style: GoogleFonts.roboto(
                         color: Apptheme.silver,
                         fontSize: FontSizeManager.header,
@@ -233,14 +232,25 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                                     backgroundColor: Apptheme.lightYellow,
                                     shadowColor: Apptheme.shadowYellow,
                                     text: 'Flip Coin & Start',
-                                    onPressed: () =>
-                                        Navigator.of(context).pushNamed(
-                                          FlippingCoinScreen.routeName,
-                                          arguments: {
-                                            'screenFromName' : screenName,
-                                            'playerOneName' : playerOneNameController.text,
-                                          },
-                                        ),
+                                    onPressed: () {
+                                      VarManager.playerOneName =
+                                          playerOneNameController.text.isEmpty
+                                          ? 'Player 1'
+                                          : playerOneNameController.text;
+                                      Navigator.of(context).pushNamed(
+                                        FlippingCoinScreen.routeName,
+                                        arguments: {
+                                          'screenFromName':
+                                              VarManager.playerVsBotScreenName,
+                                          'playerOneName':
+                                              playerOneNameController
+                                                  .text
+                                                  .isEmpty
+                                              ? 'Player 1'
+                                              : playerOneNameController.text,
+                                        },
+                                      );
+                                    },
                                   ),
                                 ],
                               ),

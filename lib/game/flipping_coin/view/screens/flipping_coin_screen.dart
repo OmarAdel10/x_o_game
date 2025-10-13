@@ -3,22 +3,79 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:x_o_game/game/game/view/screens/game_screen.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/assets_manager.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
+import 'dart:math';
+import 'dart:developer';
 
-class FlippingCoinScreen extends StatelessWidget {
+import 'package:x_o_game/shared/managers/var_manager.dart';
+
+class FlippingCoinScreen extends StatefulWidget {
   static const String routeName = 'flipping-coin';
   const FlippingCoinScreen({super.key});
 
-  final String _result = 'Flipping Coin ..........';
-  final bool _animate = true;
+  @override
+  State<FlippingCoinScreen> createState() => _FlippingCoinScreenState();
+}
+
+class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
+  String _result = 'Flipping Coin ..........';
+  bool _animate = true;
+
+  String flipCoin() {
+    final random = Random();
+    return random.nextBool() ? 'Heads' : 'Tails';
+  }
+
+  Future<void> flip() async {
+    setState(() {
+      _result = 'Flipping Coin ..........';
+      _animate = true;
+    });
+
+    await Future.delayed(Duration(milliseconds: 2600));
+
+    setState(() {
+      _result = flipCoin();
+      _animate = false;
+      if (_result == 'Heads') {
+        VarManager.playerOneSymbol = 'x';
+        VarManager.playerTwoSymbol = 'o';
+      } else {
+        VarManager.playerOneSymbol = 'o';
+        VarManager.playerTwoSymbol = 'x';
+      }
+    });
+  }
+
+  Future<void> flipThenNavigate() async {
+    await flip();
+    await Future.delayed(Duration(seconds: 1));
+    Navigator.of(context).pushReplacementNamed(
+      GameScreen.routeName,
+      arguments: {
+        'playerOneName': VarManager.playerOneName,
+        'playerTwoName': VarManager.playerTwoName,
+        'PlayerOneSymbol': VarManager.playerOneSymbol,
+        'PlayerTwoSymbol': VarManager.playerTwoSymbol,
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    flipThenNavigate();
+  }
+
   @override
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, String>;
     final String screenName = args['screenFromName']!;
-    final String playerOneName = args['playerOneName']!;
+    // final String playerOneName = args['playerOneName']!;
 
     return Scaffold(
       body: SafeArea(
@@ -68,7 +125,7 @@ class FlippingCoinScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AutoSizeText(
-                    '$playerOneName uses',
+                    '${VarManager.playerOneName} uses',
                     style: GoogleFonts.roboto(
                       color: Apptheme.silver,
                       fontSize: FontSizeManager.bodyMedium,
