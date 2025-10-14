@@ -2,6 +2,8 @@ import 'dart:ui';
 
 class FontSizeManager {
   // Headers
+  static const double largeHeader = 32.0; // Main Titles
+  static const double mediumHeader = 28.0; // Main Titles
   static const double header = 24.0; // Main Titles
   static const double subheader = 20.0; // "Coin Flip!", "Bot Challenge"
   static const double sectionTitle = 16.0; // Settings Section Titles
@@ -27,4 +29,5 @@ class FontWeightManager {
   static const FontWeight sectionTitles = FontWeight.w500;
   static const FontWeight semiBold = FontWeight.w600; // Button text, headers
   static const FontWeight bold = FontWeight.w700; // Large numbers, emphasis
+  static const FontWeight extraBold = FontWeight.w800;
 }

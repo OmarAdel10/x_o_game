@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:x_o_game/game/game/view/screens/game_screen.dart';
+import 'package:x_o_game/game/game_board/view/screens/game_board_screen.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/assets_manager.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
@@ -54,7 +54,7 @@ class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
     await flip();
     await Future.delayed(Duration(seconds: 1));
     Navigator.of(context).pushReplacementNamed(
-      GameScreen.routeName,
+      GameBoardScreen.routeName,
       arguments: {
         'playerOneName': VarManager.playerOneName,
         'playerTwoName': VarManager.playerTwoName,

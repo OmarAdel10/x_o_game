@@ -6,4 +6,8 @@ class VarManager {
   static String playerTwoName = '';
   static String playerOneSymbol = '';
   static String playerTwoSymbol = '';
+  static int botScore = 0;
+  static int playerOneScore = 0;
+  static int playerTwoScore = 0;
+  static int tiesScore = 0;
 }
