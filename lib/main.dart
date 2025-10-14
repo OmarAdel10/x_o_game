@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:x_o_game/game/flipping_coin/view/screens/flipping_coin_screen.dart';
-import 'package:x_o_game/game/game/view/screens/game_screen.dart';
+import 'package:x_o_game/game/game_board/view/screens/game_board_screen.dart';
+import 'package:x_o_game/game/game_board/viewModel/game_board_view_model.dart';
 import 'package:x_o_game/game/pvb/view/screens/player_vs_bot_screen.dart';
 import 'package:x_o_game/game/pvp/view/screens/player_vs_player_screen.dart';
 import 'package:x_o_game/home/home/view/screens/home_screen.dart';
@@ -26,7 +28,10 @@ class XOGame extends StatelessWidget {
         SettingsScreen.routeName: (_) => const SettingsScreen(),
         StatisticsScreen.routeName: (_) => const StatisticsScreen(),
         FlippingCoinScreen.routeName: (_) => const FlippingCoinScreen(),
-        GameScreen.routeName: (_) => const GameScreen(),
+        GameBoardScreen.routeName: (_) => BlocProvider(
+          create: (context) => GameBoardCubit(),
+          child: GameBoardScreen(),
+        ),
       },
       initialRoute: HomeScreen.routeName,
       theme: Apptheme.darkTheme,

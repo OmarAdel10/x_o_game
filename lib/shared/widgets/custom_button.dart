@@ -12,6 +12,9 @@ class CustomButton extends StatelessWidget {
     required this.onPressed,
     this.hasPrefixIcon = false,
     this.icon,
+    this.height = 55,
+    this.verticalPadding = 18,
+    this.radius = 16
   });
 
   final Color backgroundColor;
@@ -20,6 +23,9 @@ class CustomButton extends StatelessWidget {
   final void Function() onPressed;
   final bool hasPrefixIcon;
   final IconData? icon;
+  final double height;
+  final double verticalPadding;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +33,14 @@ class CustomButton extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         width: double.infinity,
-        height: 55.0,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+        height: height,
+        padding: EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: verticalPadding,
+        ),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(radius),
           boxShadow: [
             BoxShadow(
               color: shadowColor,
@@ -51,13 +60,16 @@ class CustomButton extends StatelessWidget {
                     ],
                   )
                 : const SizedBox(),
-            AutoSizeText(
-              text,
-              minFontSize: FontSizeManager.bodySmall,
-              style: TextStyle(
-                fontSize: FontSizeManager.bodyLarge,
-                fontWeight: FontWeightManager.semiBold,
-                color: Apptheme.primary,
+            Flexible(
+              child: AutoSizeText(
+                text,
+                maxLines: 1,
+                minFontSize: FontSizeManager.bodySmall,
+                style: TextStyle(
+                  fontSize: FontSizeManager.bodyLarge,
+                  fontWeight: FontWeightManager.semiBold,
+                  color: Apptheme.primary,
+                ),
               ),
             ),
           ],
