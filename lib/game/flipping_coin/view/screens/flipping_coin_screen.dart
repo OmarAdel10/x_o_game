@@ -8,7 +8,6 @@ import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/assets_manager.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
 import 'dart:math';
-import 'dart:developer';
 
 import 'package:x_o_game/shared/managers/var_manager.dart';
 
@@ -23,6 +22,7 @@ class FlippingCoinScreen extends StatefulWidget {
 class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
   String _result = 'Flipping Coin ..........';
   bool _animate = true;
+  late String screenName;
 
   String flipCoin() {
     final random = Random();
@@ -56,10 +56,7 @@ class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
     Navigator.of(context).pushReplacementNamed(
       GameBoardScreen.routeName,
       arguments: {
-        'playerOneName': VarManager.playerOneName,
-        'playerTwoName': VarManager.playerTwoName,
-        'PlayerOneSymbol': VarManager.playerOneSymbol,
-        'PlayerTwoSymbol': VarManager.playerTwoSymbol,
+        'screenName' : screenName,
       },
     );
   }
@@ -74,8 +71,7 @@ class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, String>;
-    final String screenName = args['screenFromName']!;
-    // final String playerOneName = args['playerOneName']!;
+    screenName = args['screenFromName']!;
 
     return Scaffold(
       body: SafeArea(

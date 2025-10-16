@@ -24,6 +24,13 @@ class GameBoardScreen extends StatefulWidget {
 class _GameBoardScreenState extends State<GameBoardScreen> {
   @override
   Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+    final String screenName = args['screenName']!;
+
+    final cubit = context.read<GameBoardCubit>();
+    cubit.initGame(screenName);
+
     return BlocListener<GameBoardCubit, GameBoardState>(
       listener: (context, state) {
         final cubit = context.read<GameBoardCubit>();
@@ -69,10 +76,9 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                             shadowColor: Colors.transparent,
                             text: 'QUIT',
                             onPressed: () {
-                              Navigator.of(
-                                context,
-                              ).pushReplacementNamed(HomeScreen.routeName);
-                              cubit.navToHome();
+                              Navigator.of(context)
+                                  .pushReplacementNamed(HomeScreen.routeName)
+                                  .then((_) => cubit.navToHome());
                             },
                             height: 42,
                             verticalPadding: 13,
@@ -127,10 +133,9 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                             shadowColor: Colors.transparent,
                             text: 'QUIT',
                             onPressed: () {
-                              Navigator.of(
-                                context,
-                              ).pushReplacementNamed(HomeScreen.routeName);
-                              cubit.navToHome();
+                              Navigator.of(context)
+                                  .pushReplacementNamed(HomeScreen.routeName)
+                                  .then((_) => cubit.navToHome());
                             },
                             height: 42,
                             verticalPadding: 13,
@@ -179,348 +184,369 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
             round = cubit.round;
           }
 
+          final bool disableGrid = cubit.isBotTurn;
+
           return Scaffold(
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(
-                              context,
-                            ).pushReplacementNamed(HomeScreen.routeName);
-                            cubit.navToHome();
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Apptheme.silver,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(
-                              CupertinoIcons.arrow_left,
-                              size: 24,
-                              color: Apptheme.primary,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Apptheme.semiDarkNavy,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Apptheme.shadowDark,
-                                offset: const Offset(0, 6),
-                                blurRadius: 0,
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                round.isOdd ? AssetsManager.x : AssetsManager.o,
-                                width: 24,
-                                height: 24,
-                                fit: BoxFit.fill,
-                              ),
-                              AutoSizeText(
-                                'TURN',
-                                style: GoogleFonts.roboto(
-                                  color: Apptheme.silver,
-                                  fontSize: FontSizeManager.caption,
-                                  fontWeight: FontWeightManager.semiBold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => cubit.resetGame(),
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Apptheme.silver,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(
-                              CupertinoIcons.restart,
-                              size: 24,
-                              color: Apptheme.primary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 32),
-                    SizedBox(
-                      height: MediaQuery.sizeOf(context).height * 0.4,
-                      child: GridView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          mainAxisSpacing: 16,
-                          crossAxisSpacing: 16,
-                          childAspectRatio: 1.0,
-                        ),
-                        itemBuilder: (_, indx) => GridContainerItem(
-                          symbol: gameBoard[indx],
-                          index: indx,
-                          onPressed: cubit.onCellPressed,
-                        ),
-                        itemCount: 9,
+                child: SingleChildScrollView(
+                  physics: NeverScrollableScrollPhysics(),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.15,
                       ),
-                    ),
-
-                    const SizedBox(height: 32),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Container(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context)
+                                  .pushReplacementNamed(HomeScreen.routeName)
+                                  .then((_) => cubit.navToHome());
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Apptheme.silver,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                CupertinoIcons.arrow_left,
+                                size: 24,
+                                color: Apptheme.primary,
+                              ),
+                            ),
+                          ),
+                          Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Apptheme.lightBlue,
+                              color: Apptheme.semiDarkNavy,
                               borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Apptheme.shadowDark,
+                                  offset: const Offset(0, 6),
+                                  blurRadius: 0,
+                                ),
+                              ],
                             ),
-                            child: Column(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                  width: double.infinity,
-                                  height:
-                                      MediaQuery.sizeOf(context).height * 0.065,
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: Apptheme.semiDarkNavy,
-                                    borderRadius: BorderRadius.circular(8),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Apptheme.shadowDark,
-                                        offset: const Offset(0, 3),
-                                        blurRadius: 0,
-                                      ),
-                                    ],
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      AutoSizeText(
-                                        VarManager.playerOneName,
-                                        maxLines: 1,
-                                        style: GoogleFonts.roboto(
-                                          color: Apptheme.lightBlue,
-                                          fontSize: FontSizeManager.bodySmall,
-                                          fontWeight:
-                                              FontWeightManager.semiBold,
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            '[ ',
-                                            maxLines: 1,
-                                            style: GoogleFonts.roboto(
-                                              color: Apptheme.lightBlue,
-                                              fontSize:
-                                                  FontSizeManager.bodySmall,
-                                              fontWeight:
-                                                  FontWeightManager.bold,
-                                            ),
-                                          ),
-                                          Image.asset(
-                                            VarManager.playerOneSymbol == 'x'
-                                                ? AssetsManager.x
-                                                : AssetsManager.o,
-                                            width: 18,
-                                            height: 18,
-                                            fit: BoxFit.fill,
-                                          ),
-                                          Text(
-                                            ' ]',
-                                            maxLines: 1,
-                                            style: GoogleFonts.roboto(
-                                              color: Apptheme.lightBlue,
-                                              fontSize:
-                                                  FontSizeManager.bodySmall,
-                                              fontWeight:
-                                                  FontWeightManager.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                Image.asset(
+                                  round.isOdd
+                                      ? AssetsManager.x
+                                      : AssetsManager.o,
+                                  width: 24,
+                                  height: 24,
+                                  fit: BoxFit.fill,
                                 ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  '${VarManager.playerOneScore}',
+                                AutoSizeText(
+                                  'TURN',
                                   style: GoogleFonts.roboto(
-                                    color: Apptheme.primary,
-                                    fontSize: FontSizeManager.mediumNumber,
-                                    fontWeight: FontWeightManager.bold,
+                                    color: Apptheme.silver,
+                                    fontSize: FontSizeManager.caption,
+                                    fontWeight: FontWeightManager.semiBold,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Apptheme.silver,
-                              borderRadius: BorderRadius.circular(8),
+                          GestureDetector(
+                            onTap: () => cubit.resetGame(),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Apptheme.silver,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                CupertinoIcons.restart,
+                                size: 24,
+                                color: Apptheme.primary,
+                              ),
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  height:
-                                      MediaQuery.sizeOf(context).height * 0.065,
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: Apptheme.semiDarkNavy,
-                                    borderRadius: BorderRadius.circular(8),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Apptheme.shadowDark,
-                                        offset: const Offset(0, 3),
-                                        blurRadius: 0,
-                                      ),
-                                    ],
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 32),
+                      SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.4,
+                        child: IgnorePointer(
+                          ignoring: disableGrid,
+                          child: GridView.builder(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            physics: NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  childAspectRatio: 1.0,
+                                ),
+                            itemBuilder: (_, indx) => GridContainerItem(
+                              symbol: gameBoard[indx],
+                              index: indx,
+                              onPressed: cubit.onCellPressed,
+                            ),
+                            itemCount: 9,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Apptheme.lightBlue,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    height:
+                                        MediaQuery.sizeOf(context).height *
+                                        0.065,
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Apptheme.semiDarkNavy,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Apptheme.shadowDark,
+                                          offset: const Offset(0, 3),
+                                          blurRadius: 0,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        AutoSizeText(
+                                          VarManager.playerOneName,
+                                          maxLines: 1,
+                                          style: GoogleFonts.roboto(
+                                            color: Apptheme.lightBlue,
+                                            fontSize: FontSizeManager.bodySmall,
+                                            fontWeight:
+                                                FontWeightManager.semiBold,
+                                          ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              '[ ',
+                                              maxLines: 1,
+                                              style: GoogleFonts.roboto(
+                                                color: Apptheme.lightBlue,
+                                                fontSize:
+                                                    FontSizeManager.bodySmall,
+                                                fontWeight:
+                                                    FontWeightManager.bold,
+                                              ),
+                                            ),
+                                            Image.asset(
+                                              VarManager.playerOneSymbol == 'x'
+                                                  ? AssetsManager.x
+                                                  : AssetsManager.o,
+                                              width: 18,
+                                              height: 18,
+                                              fit: BoxFit.fill,
+                                            ),
+                                            Text(
+                                              ' ]',
+                                              maxLines: 1,
+                                              style: GoogleFonts.roboto(
+                                                color: Apptheme.lightBlue,
+                                                fontSize:
+                                                    FontSizeManager.bodySmall,
+                                                fontWeight:
+                                                    FontWeightManager.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  child: Center(
-                                    child: AutoSizeText(
-                                      'Ties',
-                                      maxLines: 1,
-                                      style: GoogleFonts.roboto(
-                                        color: Apptheme.silver,
-                                        fontSize: FontSizeManager.bodySmall,
-                                        fontWeight: FontWeightManager.semiBold,
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    '${VarManager.playerOneScore}',
+                                    style: GoogleFonts.roboto(
+                                      color: Apptheme.primary,
+                                      fontSize: FontSizeManager.mediumNumber,
+                                      fontWeight: FontWeightManager.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Apptheme.silver,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    height:
+                                        MediaQuery.sizeOf(context).height *
+                                        0.065,
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Apptheme.semiDarkNavy,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Apptheme.shadowDark,
+                                          offset: const Offset(0, 3),
+                                          blurRadius: 0,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Center(
+                                      child: AutoSizeText(
+                                        'Ties',
+                                        maxLines: 1,
+                                        style: GoogleFonts.roboto(
+                                          color: Apptheme.silver,
+                                          fontSize: FontSizeManager.bodySmall,
+                                          fontWeight:
+                                              FontWeightManager.semiBold,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  '${VarManager.tiesScore}',
-                                  style: GoogleFonts.roboto(
-                                    color: Apptheme.primary,
-                                    fontSize: FontSizeManager.mediumNumber,
-                                    fontWeight: FontWeightManager.bold,
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    '${VarManager.tiesScore}',
+                                    style: GoogleFonts.roboto(
+                                      color: Apptheme.primary,
+                                      fontSize: FontSizeManager.mediumNumber,
+                                      fontWeight: FontWeightManager.bold,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Apptheme.lightYellow,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  height:
-                                      MediaQuery.sizeOf(context).height * 0.065,
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: Apptheme.semiDarkNavy,
-                                    borderRadius: BorderRadius.circular(8),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Apptheme.shadowDark,
-                                        offset: const Offset(0, 3),
-                                        blurRadius: 0,
-                                      ),
-                                    ],
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      AutoSizeText(
-                                        VarManager.playerTwoName,
-                                        maxLines: 1,
-                                        style: GoogleFonts.roboto(
-                                          color: Apptheme.lightYellow,
-                                          fontSize: FontSizeManager.bodySmall,
-                                          fontWeight:
-                                              FontWeightManager.semiBold,
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Apptheme.lightYellow,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    height:
+                                        MediaQuery.sizeOf(context).height *
+                                        0.065,
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Apptheme.semiDarkNavy,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Apptheme.shadowDark,
+                                          offset: const Offset(0, 3),
+                                          blurRadius: 0,
                                         ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            '[ ',
-                                            maxLines: 1,
-                                            style: GoogleFonts.roboto(
-                                              color: Apptheme.lightYellow,
-                                              fontSize:
-                                                  FontSizeManager.bodySmall,
-                                              fontWeight:
-                                                  FontWeightManager.bold,
+                                      ],
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        AutoSizeText(
+                                          screenName ==
+                                                  VarManager
+                                                      .playerVsPlayerScreenName
+                                              ? VarManager.playerTwoName
+                                              : VarManager.botName,
+                                          maxLines: 1,
+                                          style: GoogleFonts.roboto(
+                                            color: Apptheme.lightYellow,
+                                            fontSize: FontSizeManager.bodySmall,
+                                            fontWeight:
+                                                FontWeightManager.semiBold,
+                                          ),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              '[ ',
+                                              maxLines: 1,
+                                              style: GoogleFonts.roboto(
+                                                color: Apptheme.lightYellow,
+                                                fontSize:
+                                                    FontSizeManager.bodySmall,
+                                                fontWeight:
+                                                    FontWeightManager.bold,
+                                              ),
                                             ),
-                                          ),
-                                          Image.asset(
-                                            VarManager.playerTwoSymbol == 'x'
-                                                ? AssetsManager.x
-                                                : AssetsManager.o,
-                                            width: 18,
-                                            height: 18,
-                                            fit: BoxFit.fill,
-                                          ),
-                                          Text(
-                                            ' ]',
-                                            maxLines: 1,
-                                            style: GoogleFonts.roboto(
-                                              color: Apptheme.lightYellow,
-                                              fontSize:
-                                                  FontSizeManager.bodySmall,
-                                              fontWeight:
-                                                  FontWeightManager.bold,
+                                            Image.asset(
+                                              VarManager.playerTwoSymbol == 'x'
+                                                  ? AssetsManager.x
+                                                  : AssetsManager.o,
+                                              width: 18,
+                                              height: 18,
+                                              fit: BoxFit.fill,
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                            Text(
+                                              ' ]',
+                                              maxLines: 1,
+                                              style: GoogleFonts.roboto(
+                                                color: Apptheme.lightYellow,
+                                                fontSize:
+                                                    FontSizeManager.bodySmall,
+                                                fontWeight:
+                                                    FontWeightManager.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  '${VarManager.playerTwoScore}',
-                                  style: GoogleFonts.roboto(
-                                    color: Apptheme.primary,
-                                    fontSize: FontSizeManager.mediumNumber,
-                                    fontWeight: FontWeightManager.bold,
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    '${screenName == VarManager.playerVsPlayerScreenName ? VarManager.playerTwoScore : VarManager.botScore}',
+                                    style: GoogleFonts.roboto(
+                                      color: Apptheme.primary,
+                                      fontSize: FontSizeManager.mediumNumber,
+                                      fontWeight: FontWeightManager.bold,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

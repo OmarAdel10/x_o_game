@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,14 +23,13 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final difficultyModeContainerEmojis = ['😊', '🤔', '😤', '😈'];
+    final difficultyModeContainerEmojis = ['😊', '🤔', '😈'];
     final difficultyModeContainerQuotes = [
       '"I\'ll go easy on you!"',
       '"This should be fun!"',
-      '"Prepare yourself!"',
       '"You asked for it.... 😈"',
     ];
-    final sliderLabels = ['Easy', 'Medium', 'Hard', 'Extreme'];
+    final sliderLabels = ['Easy', 'Medium', 'Hard'];
     final double min = 0;
     final double max = sliderLabels.length - 1.0;
     final int divisions = sliderLabels.length - 1;
@@ -152,7 +149,7 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                                 onChanged: (value) {
                                   setState(() {
                                     _currentIndex = value.toInt();
-                                    log('currentIndex: $_currentIndex');
+                                    VarManager.botMode = _currentIndex;
                                   });
                                 },
                               ),

@@ -2,6 +2,7 @@ class VarManager {
   static const String playerVsPlayerScreenName = 'Player Setup';
   static const String playerVsBotScreenName = 'Bot Challenge';
   static const String botName = 'Bot';
+  static int botMode = 0;
   static String playerOneName = '';
   static String playerTwoName = '';
   static String playerOneSymbol = '';
