@@ -1,9 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:x_o_game/game/game_board/view/screens/game_board_screen.dart';
+import 'package:x_o_game/generated/l10n.dart';
+import 'package:x_o_game/home/settings/viewModel/settings_view_model.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/assets_manager.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
@@ -20,18 +23,20 @@ class FlippingCoinScreen extends StatefulWidget {
 }
 
 class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
-  String _result = 'Flipping Coin ..........';
+  String _result = '';
   bool _animate = true;
   late String screenName;
 
   String flipCoin() {
+    final localization = S.of(context);
     final random = Random();
-    return random.nextBool() ? 'Heads' : 'Tails';
+    return random.nextBool() ? localization.heads : localization.tails;
   }
 
   Future<void> flip() async {
+    final localization = S.of(context);
     setState(() {
-      _result = 'Flipping Coin ..........';
+      _result = localization.flipping_coin;
       _animate = true;
     });
 
@@ -40,7 +45,7 @@ class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
     setState(() {
       _result = flipCoin();
       _animate = false;
-      if (_result == 'Heads') {
+      if (_result == localization.heads) {
         VarManager.playerOneSymbol = 'x';
         VarManager.playerTwoSymbol = 'o';
       } else {
@@ -52,19 +57,20 @@ class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
 
   Future<void> flipThenNavigate() async {
     await flip();
+    
     await Future.delayed(Duration(seconds: 1));
     Navigator.of(context).pushReplacementNamed(
       GameBoardScreen.routeName,
-      arguments: {
-        'screenName' : screenName,
-      },
+      arguments: {'screenName': screenName},
     );
   }
 
   @override
   void initState() {
     super.initState();
-    flipThenNavigate();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      flipThenNavigate();
+    });
   }
 
   @override
@@ -72,6 +78,8 @@ class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, String>;
     screenName = args['screenFromName']!;
+
+    final localization = S.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -90,7 +98,9 @@ class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
                       }
                     },
                     icon: Icon(
-                      CupertinoIcons.arrow_left,
+                      context.read<SettingsBloc>().state.model.language == 'en'
+                          ? CupertinoIcons.arrow_left
+                          : CupertinoIcons.arrow_right,
                       size: 24,
                       color: Apptheme.silver,
                     ),
@@ -108,7 +118,7 @@ class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
               ),
               const SizedBox(height: 32),
               AutoSizeText(
-                'Coin Flip!',
+                localization.coin_flip,
                 style: GoogleFonts.roboto(
                   color: Apptheme.silver,
                   fontSize: FontSizeManager.subheader,
@@ -121,7 +131,7 @@ class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AutoSizeText(
-                    '${VarManager.playerOneName} uses',
+                    '${VarManager.playerOneName} ${localization.uses}',
                     style: GoogleFonts.roboto(
                       color: Apptheme.silver,
                       fontSize: FontSizeManager.bodyMedium,
@@ -135,7 +145,7 @@ class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
                     fit: BoxFit.fill,
                   ),
                   AutoSizeText(
-                    'if heads, otherwise',
+                    localization.if_heads,
                     style: GoogleFonts.roboto(
                       color: Apptheme.silver,
                       fontSize: FontSizeManager.bodyMedium,

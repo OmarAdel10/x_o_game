@@ -1,7 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:x_o_game/generated/l10n.dart';
+import 'package:x_o_game/home/settings/viewModel/settings_view_model.dart';
 import 'package:x_o_game/home/statistics/view/widgets/bot_challenge_container_item.dart';
 import 'package:x_o_game/home/statistics/view/widgets/overall_stats_container_item.dart';
 import 'package:x_o_game/home/statistics/view/widgets/recent_games_container_item.dart';
@@ -17,6 +20,8 @@ class StatisticsScreen extends StatefulWidget {
 }
 
 class _StatisticsScreenState extends State<StatisticsScreen> {
+  final scrollController = ScrollController();
+
   final List<Widget> recentItems = [
     RecentGamesContainerItem(
       modeName: 'Player 1 vs Player 2',
@@ -82,6 +87,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localization = S.of(context);
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -102,14 +109,17 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         }
                       },
                       icon: Icon(
-                        CupertinoIcons.arrow_left,
+                        context.read<SettingsBloc>().state.model.language ==
+                                'en'
+                            ? CupertinoIcons.arrow_left
+                            : CupertinoIcons.arrow_right,
                         size: 24,
                         color: Apptheme.silver,
                       ),
                     ),
                     const SizedBox(width: 20),
                     AutoSizeText(
-                      'Game Statistics',
+                      localization.game_statistics,
                       style: GoogleFonts.roboto(
                         color: Apptheme.silver,
                         fontSize: FontSizeManager.header,
@@ -151,7 +161,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               ),
                               const SizedBox(width: 8),
                               AutoSizeText(
-                                'Overall Stats',
+                                localization.overall_stats,
                                 style: GoogleFonts.roboto(
                                   color: Apptheme.silver,
                                   fontSize: FontSizeManager.sectionTitle,
@@ -166,14 +176,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               Expanded(
                                 child: OverallStatsContainerItem(
                                   statNumber: 28,
-                                  statText: 'Total Games',
+                                  statText: localization.total_games,
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: OverallStatsContainerItem(
                                   statNumber: 7,
-                                  statText: 'Draws',
+                                  statText: localization.draws,
                                 ),
                               ),
                             ],
@@ -184,7 +194,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               Expanded(
                                 child: OverallStatsContainerItem(
                                   statNumber: 9,
-                                  statText: 'PvP Games',
+                                  statText: localization.pvp_games,
                                   statNumberColor: Apptheme.lightBlue,
                                 ),
                               ),
@@ -192,7 +202,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               Expanded(
                                 child: OverallStatsContainerItem(
                                   statNumber: 19,
-                                  statText: 'vs Bot',
+                                  statText: localization.vs_bot,
                                   statNumberColor: Apptheme.lightYellow,
                                 ),
                               ),
@@ -237,7 +247,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               ),
                               const SizedBox(width: 8),
                               AutoSizeText(
-                                'Bot Challenge Stats',
+                                localization.bot_challenge_stats,
                                 style: GoogleFonts.roboto(
                                   color: Apptheme.silver,
                                   fontSize: FontSizeManager.sectionTitle,
@@ -251,25 +261,19 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           Column(
                             children: [
                               BotChallengeContainerItem(
-                                modeText: 'Easy',
+                                modeText: localization.easy,
                                 winingPercentNumber: 0,
                                 totalGamesInThisMode: 0,
                                 totalWiningsInThisMode: 0,
                               ),
                               BotChallengeContainerItem(
-                                modeText: 'Medium',
+                                modeText: localization.medium,
                                 winingPercentNumber: 42,
                                 totalGamesInThisMode: 8,
                                 totalWiningsInThisMode: 19,
                               ),
                               BotChallengeContainerItem(
-                                modeText: 'Hard',
-                                winingPercentNumber: 0,
-                                totalGamesInThisMode: 0,
-                                totalWiningsInThisMode: 0,
-                              ),
-                              BotChallengeContainerItem(
-                                modeText: 'Extreme',
+                                modeText: localization.hard,
                                 winingPercentNumber: 0,
                                 totalGamesInThisMode: 0,
                                 totalWiningsInThisMode: 0,
@@ -315,7 +319,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                               ),
                               const SizedBox(width: 8),
                               AutoSizeText(
-                                'Recent Games',
+                                localization.recent_games,
                                 style: GoogleFonts.roboto(
                                   color: Apptheme.silver,
                                   fontSize: FontSizeManager.sectionTitle,
@@ -341,8 +345,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                 crossAxisMargin: -1,
                               ),
                               child: Scrollbar(
+                                controller: scrollController,
                                 thumbVisibility: true,
                                 child: ListView.separated(
+                                  controller: scrollController,
                                   itemBuilder: (_, index) => recentItems[index],
                                   separatorBuilder: (_, index) =>
                                       const SizedBox(height: 5),
@@ -364,5 +370,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 }

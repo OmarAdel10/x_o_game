@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:x_o_game/generated/l10n.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
 
@@ -19,6 +20,8 @@ class BotChallengeContainerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localization = S.of(context);
+
     return Card(
       color: Apptheme.deepDarkNavy,
       elevation: 1,
@@ -53,7 +56,7 @@ class BotChallengeContainerItem extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Win Rate',
+                        localization.win_rate,
                         style: GoogleFonts.roboto(
                           color: Apptheme.silver,
                           fontSize: FontSizeManager.tiny,
@@ -63,7 +66,7 @@ class BotChallengeContainerItem extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    '$totalWiningsInThisMode/$totalGamesInThisMode wins',
+                    '$totalWiningsInThisMode/$totalGamesInThisMode ${localization.wins}',
                     style: GoogleFonts.roboto(
                       color: Apptheme.silver.withValues(alpha: 0.6),
                       fontSize: FontSizeManager.tiny,
