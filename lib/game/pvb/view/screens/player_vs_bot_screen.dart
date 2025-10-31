@@ -1,8 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:x_o_game/game/flipping_coin/view/screens/flipping_coin_screen.dart';
+import 'package:x_o_game/generated/l10n.dart';
+import 'package:x_o_game/home/settings/viewModel/settings_view_model.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
 import 'package:x_o_game/shared/managers/var_manager.dart';
@@ -23,13 +26,14 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localization = S.of(context);
     final difficultyModeContainerEmojis = ['😊', '🤔', '😈'];
     final difficultyModeContainerQuotes = [
-      '"I\'ll go easy on you!"',
-      '"This should be fun!"',
-      '"You asked for it.... 😈"',
+      (localization.Ill_go_easy_on_you),
+      (localization.This_should_be_fun),
+      (localization.You_asked_for_it),
     ];
-    final sliderLabels = ['Easy', 'Medium', 'Hard'];
+    final sliderLabels = [localization.easy, localization.medium, localization.hard];
     final double min = 0;
     final double max = sliderLabels.length - 1.0;
     final int divisions = sliderLabels.length - 1;
@@ -55,14 +59,14 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                         }
                       },
                       icon: Icon(
-                        CupertinoIcons.arrow_left,
+                        context.read<SettingsBloc>().state.model.language == 'en' ? CupertinoIcons.arrow_left : CupertinoIcons.arrow_right,
                         size: 24,
                         color: Apptheme.silver,
                       ),
                     ),
                     const SizedBox(width: 20),
                     AutoSizeText(
-                      VarManager.playerVsBotScreenName,
+                      localization.bot_challenge,
                       style: GoogleFonts.roboto(
                         color: Apptheme.silver,
                         fontSize: FontSizeManager.header,
@@ -101,7 +105,7 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Player 1 Name',
+                                    localization.player_one_name,
                                     style: GoogleFonts.roboto(
                                       color: Apptheme.silver,
                                       fontSize: FontSizeManager.bodySmall,
@@ -111,12 +115,12 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                                   const SizedBox(height: 8),
                                   CustomTextField(
                                     controller: playerOneNameController,
-                                    hintText: 'Enter Name ( or play as Guest)',
+                                    hintText: localization.enter_name,
                                   ),
 
                                   const SizedBox(height: 16),
                                   Text(
-                                    'Bot Difficulty',
+                                    localization.bot_difficulty,
                                     style: GoogleFonts.roboto(
                                       color: Apptheme.silver,
                                       fontSize: FontSizeManager.bodySmall,
@@ -228,22 +232,31 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                                     icon: CupertinoIcons.play,
                                     backgroundColor: Apptheme.lightYellow,
                                     shadowColor: Apptheme.shadowYellow,
-                                    text: 'Flip Coin & Start',
+                                    text: localization.flip_coin_and_start,
                                     onPressed: () {
                                       VarManager.playerOneName =
                                           playerOneNameController.text.isEmpty
-                                          ? 'Player 1'
+                                          ? context.read<SettingsBloc>().state.model.language == 'en' ? 'Player 1' : 'اللاعب 1'
                                           : playerOneNameController.text;
                                       Navigator.of(context).pushNamed(
                                         FlippingCoinScreen.routeName,
                                         arguments: {
                                           'screenFromName':
-                                              VarManager.playerVsBotScreenName,
+                                              localization.bot_challenge,
                                           'playerOneName':
                                               playerOneNameController
                                                   .text
                                                   .isEmpty
-                                              ? 'Player 1'
+                                              ? context
+                                                            .read<
+                                                              SettingsBloc
+                                                            >()
+                                                            .state
+                                                            .model
+                                                            .language ==
+                                                        'en'
+                                                    ? 'Player 1'
+                                                    : 'اللاعب 1'
                                               : playerOneNameController.text,
                                         },
                                       );
