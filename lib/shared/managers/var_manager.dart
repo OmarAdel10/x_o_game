@@ -12,3 +12,9 @@ class VarManager {
   static int playerTwoScore = 0;
   static int tiesScore = 0;
 }
+
+class CacheManager {
+  static const String musicState = 'music';
+  static const String soundEffectsState = 'soundEffects';
+  static const String languageState = 'language';
+}

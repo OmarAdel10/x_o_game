@@ -19,7 +19,8 @@ class GridContainerItem extends StatelessWidget {
       onTap: () {
         onPressed(index);
       },
-      child: Container(        decoration: BoxDecoration(
+      child: Container(
+        decoration: BoxDecoration(
           color: Apptheme.semiDarkNavy,
           borderRadius: BorderRadius.circular(8),
           boxShadow: [

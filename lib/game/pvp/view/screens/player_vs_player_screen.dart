@@ -1,8 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:x_o_game/game/flipping_coin/view/screens/flipping_coin_screen.dart';
+import 'package:x_o_game/generated/l10n.dart';
+import 'package:x_o_game/home/settings/viewModel/settings_view_model.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
 import 'package:x_o_game/shared/managers/var_manager.dart';
@@ -19,6 +22,8 @@ class PlayerVsPlayerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> formKey = GlobalKey();
+    final localization = S.of(context);
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -28,7 +33,7 @@ class PlayerVsPlayerScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: MediaQuery.sizeOf(context).height * 0.25,),
+                SizedBox(height: MediaQuery.sizeOf(context).height * 0.25),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -39,14 +44,17 @@ class PlayerVsPlayerScreen extends StatelessWidget {
                         }
                       },
                       icon: Icon(
-                        CupertinoIcons.arrow_left,
+                        context.read<SettingsBloc>().state.model.language ==
+                                'en'
+                            ? CupertinoIcons.arrow_left
+                            : CupertinoIcons.arrow_right,
                         size: 24,
                         color: Apptheme.silver,
                       ),
                     ),
                     const SizedBox(width: 20),
                     AutoSizeText(
-                      VarManager.playerVsPlayerScreenName,
+                      localization.player_setup,
                       style: GoogleFonts.roboto(
                         color: Apptheme.silver,
                         fontSize: FontSizeManager.header,
@@ -81,7 +89,7 @@ class PlayerVsPlayerScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Player 1 Name',
+                              localization.player_one_name,
                               style: GoogleFonts.roboto(
                                 color: Apptheme.silver,
                                 fontSize: FontSizeManager.bodySmall,
@@ -91,12 +99,12 @@ class PlayerVsPlayerScreen extends StatelessWidget {
                             const SizedBox(height: 8),
                             CustomTextField(
                               controller: playerOneNameController,
-                              hintText: 'Enter Name ( or play as Guest)',
+                              hintText: localization.enter_name,
                             ),
-            
+
                             const SizedBox(height: 16),
                             Text(
-                              'Player 2 Name',
+                              localization.player_two_name,
                               style: GoogleFonts.roboto(
                                 color: Apptheme.silver,
                                 fontSize: FontSizeManager.bodySmall,
@@ -106,37 +114,64 @@ class PlayerVsPlayerScreen extends StatelessWidget {
                             const SizedBox(height: 8),
                             CustomTextField(
                               controller: playerTwoNameController,
-                              hintText: 'Enter Name ( or play as Guest)',
+                              hintText: localization.enter_name,
                             ),
-            
+
                             const SizedBox(height: 16),
                             CustomButton(
                               hasPrefixIcon: true,
                               icon: CupertinoIcons.play,
                               backgroundColor: Apptheme.lightYellow,
                               shadowColor: Apptheme.shadowYellow,
-                              text: 'Flip Coin & Start',
+                              text: localization.flip_coin_and_start,
                               onPressed: () {
                                 VarManager.playerOneName =
                                     playerOneNameController.text.isEmpty
-                                    ? 'Player 1'
+                                    ? context
+                                                  .read<SettingsBloc>()
+                                                  .state
+                                                  .model
+                                                  .language ==
+                                              'en'
+                                          ? 'Player 1'
+                                          : 'اللاعب 1'
                                     : playerOneNameController.text;
                                 VarManager.playerTwoName =
                                     playerTwoNameController.text.isEmpty
-                                    ? 'Player 2'
+                                    ? context
+                                                  .read<SettingsBloc>()
+                                                  .state
+                                                  .model
+                                                  .language ==
+                                              'en'
+                                          ? 'Player 2'
+                                          : 'اللاعب 2'
                                     : playerTwoNameController.text;
                                 Navigator.of(context).pushNamed(
                                   FlippingCoinScreen.routeName,
                                   arguments: {
-                                    'screenFromName':
-                                        VarManager.playerVsPlayerScreenName,
+                                    'screenFromName': localization.player_setup,
                                     'playerOneName':
                                         playerOneNameController.text.isEmpty
-                                        ? 'Player 1'
+                                        ? context
+                                                      .read<SettingsBloc>()
+                                                      .state
+                                                      .model
+                                                      .language ==
+                                                  'en'
+                                              ? 'Player 1'
+                                              : 'اللاعب 1'
                                         : playerOneNameController.text,
                                     'playerTwoName':
                                         playerTwoNameController.text.isEmpty
-                                        ? 'Player 2'
+                                        ? context
+                                                      .read<SettingsBloc>()
+                                                      .state
+                                                      .model
+                                                      .language ==
+                                                  'en'
+                                              ? 'Player 2'
+                                              : 'اللاعب 2'
                                         : playerTwoNameController.text,
                                   },
                                 );
