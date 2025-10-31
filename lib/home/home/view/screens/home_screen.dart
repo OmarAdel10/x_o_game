@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:x_o_game/game/pvb/view/screens/player_vs_bot_screen.dart';
 import 'package:x_o_game/game/pvp/view/screens/player_vs_player_screen.dart';
+import 'package:x_o_game/generated/l10n.dart';
 import 'package:x_o_game/home/settings/view/screens/settings_screen.dart';
 import 'package:x_o_game/home/statistics/view/screens/statistics_screen.dart';
 import 'package:x_o_game/shared/apptheme.dart';
@@ -16,6 +17,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localization = S.of(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -52,7 +54,7 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         Center(
                           child: Text(
-                            'PICK MODE',
+                            localization.pick_mode,
                             style: GoogleFonts.roboto(
                               color: Apptheme.silver,
                               fontSize: FontSizeManager.bodyMedium,
@@ -64,7 +66,7 @@ class HomeScreen extends StatelessWidget {
                         CustomButton(
                           backgroundColor: Apptheme.lightBlue,
                           shadowColor: Apptheme.shadowBlue,
-                          text: 'NEW GAME ( VS PLAYER )',
+                          text: localization.new_game_player,
                           onPressed: () => Navigator.of(
                             context,
                           ).pushNamed(PlayerVsPlayerScreen.routeName),
@@ -73,7 +75,7 @@ class HomeScreen extends StatelessWidget {
                         CustomButton(
                           backgroundColor: Apptheme.lightYellow,
                           shadowColor: Apptheme.shadowYellow,
-                          text: 'NEW GAME ( VS BOT )',
+                          text: localization.new_game_bot,
                           onPressed: () => Navigator.of(
                             context,
                           ).pushNamed(PlayerVsBotScreen.routeName),

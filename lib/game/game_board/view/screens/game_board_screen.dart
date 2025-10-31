@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:x_o_game/game/game_board/view/widgets/grid_container_item.dart';
-import 'package:x_o_game/game/game_board/viewModel/game_board_states.dart';
-import 'package:x_o_game/game/game_board/viewModel/game_board_view_model.dart';
+import 'package:x_o_game/game/game_board/viewModel/game_board_states_cubit.dart';
+import 'package:x_o_game/game/game_board/viewModel/game_board_view_model_cubit.dart';
+import 'package:x_o_game/generated/l10n.dart';
 import 'package:x_o_game/home/home/view/screens/home_screen.dart';
+import 'package:x_o_game/home/settings/viewModel/settings_view_model.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/assets_manager.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
@@ -24,6 +26,7 @@ class GameBoardScreen extends StatefulWidget {
 class _GameBoardScreenState extends State<GameBoardScreen> {
   @override
   Widget build(BuildContext context) {
+    final localization = S.of(context);
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, String>;
     final String screenName = args['screenName']!;
@@ -48,7 +51,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                   children: [
                     const SizedBox(height: 10),
                     Text(
-                      'TAKES THE ROUND',
+                      localization.takes_the_round,
                       style: GoogleFonts.roboto(
                         color: Apptheme.silver,
                         fontSize: FontSizeManager.bodySmall,
@@ -57,8 +60,8 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                     ),
                     Text(
                       state.winnerSymbol == VarManager.playerOneSymbol
-                          ? 'Player 1 WINS!'
-                          : 'Player 2 WINS!',
+                          ? '${VarManager.playerOneName} ${localization.game_wins}'
+                          : '${VarManager.playerTwoName} ${localization.game_wins}',
                       style: GoogleFonts.roboto(
                         color: state.winnerSymbol == VarManager.playerOneSymbol
                             ? Apptheme.lightBlue
@@ -74,7 +77,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                           child: CustomButton(
                             backgroundColor: Apptheme.silver,
                             shadowColor: Colors.transparent,
-                            text: 'QUIT',
+                            text: localization.quit,
                             onPressed: () {
                               Navigator.of(context)
                                   .pushReplacementNamed(HomeScreen.routeName)
@@ -90,7 +93,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                           child: CustomButton(
                             backgroundColor: Apptheme.lightYellow,
                             shadowColor: Apptheme.shadowYellow,
-                            text: 'NEXT ROUND',
+                            text: localization.next_round,
                             onPressed: () => Navigator.of(context).pop(),
                             height: 42,
                             verticalPadding: 13,
@@ -117,7 +120,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                   children: [
                     const SizedBox(height: 10),
                     Text(
-                      'ROUND TIED',
+                      localization.round_tied,
                       style: GoogleFonts.roboto(
                         color: Apptheme.silver,
                         fontSize: FontSizeManager.largeHeader,
@@ -131,7 +134,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                           child: CustomButton(
                             backgroundColor: Apptheme.silver,
                             shadowColor: Colors.transparent,
-                            text: 'QUIT',
+                            text: localization.quit,
                             onPressed: () {
                               Navigator.of(context)
                                   .pushReplacementNamed(HomeScreen.routeName)
@@ -147,7 +150,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                           child: CustomButton(
                             backgroundColor: Apptheme.lightYellow,
                             shadowColor: Apptheme.shadowYellow,
-                            text: 'NEXT ROUND',
+                            text: localization.round_tied,
                             onPressed: () => Navigator.of(context).pop(),
                             height: 42,
                             verticalPadding: 13,
@@ -214,7 +217,14 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
-                                CupertinoIcons.arrow_left,
+                                context
+                                            .read<SettingsBloc>()
+                                            .state
+                                            .model
+                                            .language ==
+                                        'en'
+                                    ? CupertinoIcons.arrow_left
+                                    : CupertinoIcons.arrow_right,
                                 size: 24,
                                 color: Apptheme.primary,
                               ),
@@ -236,6 +246,22 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                context
+                                            .read<SettingsBloc>()
+                                            .state
+                                            .model
+                                            .language ==
+                                        'en'
+                                    ? const SizedBox()
+                                    : AutoSizeText(
+                                        localization.turn,
+                                        style: GoogleFonts.roboto(
+                                          color: Apptheme.silver,
+                                          fontSize: FontSizeManager.caption,
+                                          fontWeight:
+                                              FontWeightManager.semiBold,
+                                        ),
+                                      ),
                                 Image.asset(
                                   round.isOdd
                                       ? AssetsManager.x
@@ -244,14 +270,22 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                                   height: 24,
                                   fit: BoxFit.fill,
                                 ),
-                                AutoSizeText(
-                                  'TURN',
-                                  style: GoogleFonts.roboto(
-                                    color: Apptheme.silver,
-                                    fontSize: FontSizeManager.caption,
-                                    fontWeight: FontWeightManager.semiBold,
-                                  ),
-                                ),
+                                context
+                                            .read<SettingsBloc>()
+                                            .state
+                                            .model
+                                            .language ==
+                                        'en'
+                                    ? AutoSizeText(
+                                        localization.turn,
+                                        style: GoogleFonts.roboto(
+                                          color: Apptheme.silver,
+                                          fontSize: FontSizeManager.caption,
+                                          fontWeight:
+                                              FontWeightManager.semiBold,
+                                        ),
+                                      )
+                                    : const SizedBox(),
                               ],
                             ),
                           ),
@@ -316,7 +350,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                                     width: double.infinity,
                                     height:
                                         MediaQuery.sizeOf(context).height *
-                                        0.065,
+                                        0.066,
                                     padding: const EdgeInsets.all(6),
                                     decoration: BoxDecoration(
                                       color: Apptheme.semiDarkNavy,
@@ -334,6 +368,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                                         AutoSizeText(
                                           VarManager.playerOneName,
                                           maxLines: 1,
+                                          minFontSize: FontSizeManager.caption,
                                           style: GoogleFonts.roboto(
                                             color: Apptheme.lightBlue,
                                             fontSize: FontSizeManager.bodySmall,
@@ -360,8 +395,8 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                                               VarManager.playerOneSymbol == 'x'
                                                   ? AssetsManager.x
                                                   : AssetsManager.o,
-                                              width: 18,
-                                              height: 18,
+                                              width: 17,
+                                              height: 17,
                                               fit: BoxFit.fill,
                                             ),
                                             Text(
@@ -408,7 +443,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                                     width: double.infinity,
                                     height:
                                         MediaQuery.sizeOf(context).height *
-                                        0.065,
+                                        0.066,
                                     padding: const EdgeInsets.all(6),
                                     decoration: BoxDecoration(
                                       color: Apptheme.semiDarkNavy,
@@ -462,7 +497,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                                     width: double.infinity,
                                     height:
                                         MediaQuery.sizeOf(context).height *
-                                        0.065,
+                                        0.066,
                                     padding: const EdgeInsets.all(6),
                                     decoration: BoxDecoration(
                                       color: Apptheme.semiDarkNavy,
@@ -484,6 +519,7 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                                               ? VarManager.playerTwoName
                                               : VarManager.botName,
                                           maxLines: 1,
+                                          minFontSize: FontSizeManager.caption,
                                           style: GoogleFonts.roboto(
                                             color: Apptheme.lightYellow,
                                             fontSize: FontSizeManager.bodySmall,
@@ -510,8 +546,8 @@ class _GameBoardScreenState extends State<GameBoardScreen> {
                                               VarManager.playerTwoSymbol == 'x'
                                                   ? AssetsManager.x
                                                   : AssetsManager.o,
-                                              width: 18,
-                                              height: 18,
+                                              width: 17,
+                                              height: 17,
                                               fit: BoxFit.fill,
                                             ),
                                             Text(
