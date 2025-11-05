@@ -4,7 +4,7 @@ import 'package:x_o_game/shared/apptheme.dart';
 class GridContainerItem extends StatelessWidget {
   final String symbol;
   final int index;
-  final void Function(int) onPressed;
+  final VoidCallback onPressed;
 
   const GridContainerItem({
     super.key,
@@ -16,9 +16,7 @@ class GridContainerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        onPressed(index);
-      },
+      onTap: onPressed,
       child: Container(
         decoration: BoxDecoration(
           color: Apptheme.semiDarkNavy,

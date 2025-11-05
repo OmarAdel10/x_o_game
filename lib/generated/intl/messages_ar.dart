@@ -90,6 +90,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sound_effects": MessageLookupByLibrary.simpleMessage("المؤثرات الصوتية"),
     "tails": MessageLookupByLibrary.simpleMessage("كتابة"),
     "takes_the_round": MessageLookupByLibrary.simpleMessage("يفوز بالجولة"),
+    "tie": MessageLookupByLibrary.simpleMessage("تعادل"),
     "total_games": MessageLookupByLibrary.simpleMessage("إجمالي الألعاب"),
     "turn": MessageLookupByLibrary.simpleMessage("دور"),
     "uses": MessageLookupByLibrary.simpleMessage("يستخدم"),

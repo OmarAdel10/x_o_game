@@ -6,13 +6,11 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:x_o_game/game/flipping_coin/view/screens/flipping_coin_screen.dart';
 import 'package:x_o_game/game/game_board/view/screens/game_board_screen.dart';
-import 'package:x_o_game/game/game_board/viewModel/game_board_view_model_cubit.dart';
 import 'package:x_o_game/game/pvb/view/screens/player_vs_bot_screen.dart';
 import 'package:x_o_game/game/pvp/view/screens/player_vs_player_screen.dart';
 import 'package:x_o_game/generated/l10n.dart';
 import 'package:x_o_game/home/home/view/screens/home_screen.dart';
 import 'package:x_o_game/home/settings/view/screens/settings_screen.dart';
-import 'package:x_o_game/home/settings/viewModel/settings_events.dart';
 import 'package:x_o_game/home/settings/viewModel/settings_states.dart';
 import 'package:x_o_game/home/settings/viewModel/settings_view_model.dart';
 import 'package:x_o_game/home/statistics/view/screens/statistics_screen.dart';
@@ -54,10 +52,7 @@ class XOGame extends StatelessWidget {
               SettingsScreen.routeName: (_) => const SettingsScreen(),
               StatisticsScreen.routeName: (_) => const StatisticsScreen(),
               FlippingCoinScreen.routeName: (_) => const FlippingCoinScreen(),
-              GameBoardScreen.routeName: (_) => BlocProvider(
-                create: (context) => GameBoardCubit(),
-                child: GameBoardScreen(),
-              ),
+              GameBoardScreen.routeName: (_) => const GameBoardScreen(),
             },
             initialRoute: HomeScreen.routeName,
             theme: Apptheme.darkTheme,
