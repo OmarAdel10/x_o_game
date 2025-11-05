@@ -60,7 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     IconButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (Navigator.of(context).canPop()) {
                           Navigator.of(context).pop();
                         }
