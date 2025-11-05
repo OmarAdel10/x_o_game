@@ -1,11 +1,14 @@
-import 'dart:developer';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:x_o_game/game/flipping_coin/view/screens/flipping_coin_screen.dart';
+import 'package:x_o_game/generated/l10n.dart';
+import 'package:x_o_game/home/settings/viewModel/settings_view_model.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
+import 'package:x_o_game/shared/managers/var_manager.dart';
 import 'package:x_o_game/shared/widgets/custom_button.dart';
 import 'package:x_o_game/shared/widgets/custom_text_field.dart';
 
@@ -19,21 +22,18 @@ class PlayerVsBotScreen extends StatefulWidget {
 
 class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
   final TextEditingController playerOneNameController = TextEditingController();
-
-  final TextEditingController playerTwoNameController = TextEditingController();
-
   int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    final difficultyModeContainerEmojis = ['😊', '🤔', '😤', '😈'];
+    final localization = S.of(context);
+    final difficultyModeContainerEmojis = ['😊', '🤔', '😈'];
     final difficultyModeContainerQuotes = [
-      '"I\'ll go easy on you!"',
-      '"This should be fun!"',
-      '"Prepare yourself!"',
-      '"You asked for it.... 😈"',
+      (localization.Ill_go_easy_on_you),
+      (localization.This_should_be_fun),
+      (localization.You_asked_for_it),
     ];
-    final sliderLabels = ['Easy', 'Medium', 'Hard', 'Extreme'];
+    final sliderLabels = [localization.easy, localization.medium, localization.hard];
     final double min = 0;
     final double max = sliderLabels.length - 1.0;
     final int divisions = sliderLabels.length - 1;
@@ -48,7 +48,7 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
             physics: NeverScrollableScrollPhysics(),
             child: Column(
               children: [
-                SizedBox(height: MediaQuery.sizeOf(context).height * 0.15,),
+                SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -59,14 +59,14 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                         }
                       },
                       icon: Icon(
-                        CupertinoIcons.arrow_left,
+                        context.read<SettingsBloc>().state.model.language == 'en' ? CupertinoIcons.arrow_left : CupertinoIcons.arrow_right,
                         size: 24,
                         color: Apptheme.silver,
                       ),
                     ),
                     const SizedBox(width: 20),
                     AutoSizeText(
-                      'Bot Challenge',
+                      localization.bot_challenge,
                       style: GoogleFonts.roboto(
                         color: Apptheme.silver,
                         fontSize: FontSizeManager.header,
@@ -98,12 +98,14 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Player 1 Name',
+                                    localization.player_one_name,
                                     style: GoogleFonts.roboto(
                                       color: Apptheme.silver,
                                       fontSize: FontSizeManager.bodySmall,
@@ -113,21 +115,12 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                                   const SizedBox(height: 8),
                                   CustomTextField(
                                     controller: playerOneNameController,
-                                    hintText: 'Enter Name ( or play as Guest)',
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Field Can Not Be Empty';
-                                      }
-                                      if (value.length < 3) {
-                                        return 'Name Can Not Be Less Than 3 Characters';
-                                      }
-                                      return null;
-                                    },
+                                    hintText: localization.enter_name,
                                   ),
-            
+
                                   const SizedBox(height: 16),
                                   Text(
-                                    'Bot Difficulty',
+                                    localization.bot_difficulty,
                                     style: GoogleFonts.roboto(
                                       color: Apptheme.silver,
                                       fontSize: FontSizeManager.bodySmall,
@@ -138,7 +131,7 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                                 ],
                               ),
                             ),
-            
+
                             SliderTheme(
                               data: SliderThemeData(
                                 activeTickMarkColor: Colors.transparent,
@@ -160,16 +153,18 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                                 onChanged: (value) {
                                   setState(() {
                                     _currentIndex = value.toInt();
-                                    log('currentIndex: $_currentIndex');
+                                    VarManager.botMode = _currentIndex;
                                   });
                                 },
                               ),
                             ),
-            
+
                             const SizedBox(height: 16),
-            
+
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                              ),
                               child: Column(
                                 children: [
                                   Row(
@@ -182,24 +177,28 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                                             style: GoogleFonts.roboto(
                                               color: Apptheme.silver,
                                               fontSize: FontSizeManager.tiny,
-                                              fontWeight: FontWeightManager.light,
+                                              fontWeight:
+                                                  FontWeightManager.light,
                                             ),
                                           ),
                                         )
                                         .toList(),
                                   ),
-            
+
                                   const SizedBox(height: 16),
-            
+
                                   Container(
                                     width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(vertical: 10),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Apptheme.deepDarkNavy,
-                                      borderRadius: BorderRadius.circular(8)
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           difficultyModeContainerEmojis[_currentIndex],
@@ -225,16 +224,43 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
                                       ],
                                     ),
                                   ),
-            
-                                  const SizedBox(height: 16,),
-            
+
+                                  const SizedBox(height: 16),
+
                                   CustomButton(
                                     hasPrefixIcon: true,
                                     icon: CupertinoIcons.play,
                                     backgroundColor: Apptheme.lightYellow,
                                     shadowColor: Apptheme.shadowYellow,
-                                    text: 'Flip Coin & Start',
-                                    onPressed: () {},
+                                    text: localization.flip_coin_and_start,
+                                    onPressed: () {
+                                      VarManager.playerOneName =
+                                          playerOneNameController.text.isEmpty
+                                          ? context.read<SettingsBloc>().state.model.language == 'en' ? 'Player 1' : 'اللاعب 1'
+                                          : playerOneNameController.text;
+                                      Navigator.of(context).pushNamed(
+                                        FlippingCoinScreen.routeName,
+                                        arguments: {
+                                          'screenFromName':
+                                              localization.bot_challenge,
+                                          'playerOneName':
+                                              playerOneNameController
+                                                  .text
+                                                  .isEmpty
+                                              ? context
+                                                            .read<
+                                                              SettingsBloc
+                                                            >()
+                                                            .state
+                                                            .model
+                                                            .language ==
+                                                        'en'
+                                                    ? 'Player 1'
+                                                    : 'اللاعب 1'
+                                              : playerOneNameController.text,
+                                        },
+                                      );
+                                    },
                                   ),
                                 ],
                               ),
