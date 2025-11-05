@@ -1,28 +1,47 @@
-abstract class GameBoardState {}
+import 'package:equatable/equatable.dart';
+
+sealed class GameBoardState extends Equatable {
+  const GameBoardState();
+}
 
 class GameBoardInitial extends GameBoardState {
   final List<String> gameBoard;
   final int round;
+  const GameBoardInitial({required this.round, required this.gameBoard});
 
-  GameBoardInitial() : gameBoard = List.filled(9, ''), round = 1;
+  @override
+  List<Object?> get props => [gameBoard, round];
 }
 
-class GameBoardPress extends GameBoardState {
+class GameBoardPressState extends GameBoardState {
   final List<String> gameBoard;
   final int round;
+  const GameBoardPressState({required this.round, required this.gameBoard});
 
-  GameBoardPress({required this.gameBoard, required this.round});
+  @override
+  List<Object?> get props => [gameBoard, round];
+}
+
+class GameBoardError extends GameBoardState {
+  final String message;
+
+  const GameBoardError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
 }
 
 class GameBoardWin extends GameBoardState {
-  final List<String> gameBoard;
   final String winnerSymbol;
+  const GameBoardWin({required this.winnerSymbol});
 
-  GameBoardWin({required this.gameBoard, required this.winnerSymbol});
+  @override
+  List<Object?> get props => [winnerSymbol];
 }
 
 class GameBoardTies extends GameBoardState {
-  final List<String> gameBoard;
+  const GameBoardTies();
 
-  GameBoardTies({required this.gameBoard});
+  @override
+  List<Object?> get props => [];
 }

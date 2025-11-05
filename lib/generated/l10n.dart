@@ -438,6 +438,11 @@ class S {
       args: [],
     );
   }
+
+  /// `TIE`
+  String get tie {
+    return Intl.message('TIE', name: 'tie', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

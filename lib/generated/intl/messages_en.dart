@@ -84,6 +84,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "sound_effects": MessageLookupByLibrary.simpleMessage("Sound Effects"),
     "tails": MessageLookupByLibrary.simpleMessage("Tails"),
     "takes_the_round": MessageLookupByLibrary.simpleMessage("TAKES THE ROUND"),
+    "tie": MessageLookupByLibrary.simpleMessage("TIE"),
     "total_games": MessageLookupByLibrary.simpleMessage("Total Games"),
     "turn": MessageLookupByLibrary.simpleMessage("TURN"),
     "uses": MessageLookupByLibrary.simpleMessage("uses"),

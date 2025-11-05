@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:x_o_game/home/settings/data/models/settings_model.dart';
 
-abstract class SettingsState extends Equatable {
+sealed class SettingsState extends Equatable {
   final SettingsModel model;
 
   const SettingsState({required this.model});

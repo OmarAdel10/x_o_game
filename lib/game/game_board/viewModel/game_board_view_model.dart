@@ -1,98 +1,196 @@
+import 'dart:async';
+import 'dart:developer' as dev;
 import 'dart:math';
 
-import 'package:x_o_game/game/game_board/viewModel/game_board_states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:x_o_game/game/game_board/viewModel/game_board_events.dart';
+import 'package:x_o_game/game/game_board/viewModel/game_board_states.dart';
 import 'package:x_o_game/shared/managers/var_manager.dart';
 
-class GameBoardCubit extends Cubit<GameBoardState> {
-  GameBoardCubit() : super(GameBoardInitial());
-
+class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
+  bool isPlayerVsBot = false;
+  String playerOneSymbol = '';
+  String playerTwoSymbolOrBot = '';
   List<String> gameBoard = List.filled(9, '');
   int round = 1;
+  int playerOneScore = 0;
+  int playerTwoScore = 0;
+  int botScore = 0;
+  int tiesScore = 0;
 
-  bool get isBotTurn { 
-    if (!isPlayerVsBot) return false;
-    String currentSymbol = round.isOdd ? 'x' : 'o';
-    return botSymbol == currentSymbol;
-  }
+  GameBoardBloc()
+    : super(GameBoardInitial(round: 1, gameBoard: List.filled(9, ''))) {
+    on<GameBoardInitialEvent>((event, emit) {
+      try {
+        if (event.p1Symbol != '' && event.p2Symbol != '') {
+          playerOneSymbol = event.p1Symbol;
+          playerTwoSymbolOrBot = event.p2Symbol;
+        } else {
+          throw Exception('Players Symbols are Empty');
+        }
 
-  bool isPlayerVsBot = false;
-  String botSymbol = '';
-  String playerSymbol = '';
+        if (event.screenName != null && event.screenName!.isNotEmpty) {
+          isPlayerVsBot = event.screenName == VarManager.playerVsBotScreenName;
+        } else {
+          throw Exception('Failed to identify game mode');
+        }
 
-  void initGame(String screenName) {
-    isPlayerVsBot = screenName == VarManager.playerVsBotScreenName;
+        add(GameBoardReset());
+      } catch (e) {
+        dev.log('failed to initGame : $e');
+        emit(GameBoardError(message: 'failed to initGame : $e'));
+      }
+    });
 
-    if (isPlayerVsBot) {
-      playerSymbol = VarManager.playerOneSymbol;
-      botSymbol = VarManager.playerTwoSymbol;
-    }
+    on<GameBoardBotMoveEvent>((event, emit) async {
+      if (round > 9) return;
+      int botMoveIndex = -1;
 
-    if (isPlayerVsBot && botSymbol == 'x') {
-      _botMove();
-    }
-  }
+      switch (VarManager.botMode) {
+        case 0:
+          botMoveIndex = _easyMode();
+          break;
+        case 1:
+          botMoveIndex = _mediumMode();
+          break;
+        case 2:
+          botMoveIndex = _hardMode();
+          break;
+      }
 
-  void onCellPressed(int index) async {
-    if (gameBoard[index].isNotEmpty) return;
+      if (botMoveIndex != -1 && gameBoard[botMoveIndex].isEmpty) {
+        await Future.delayed(Duration(milliseconds: 500));
+        gameBoard[botMoveIndex] = playerTwoSymbolOrBot;
 
-    String currentSymbol = round.isOdd ? 'x' : 'o';
-    if (isPlayerVsBot && currentSymbol != playerSymbol) return;
+        if (checkWinnerCustom(gameBoard, playerTwoSymbolOrBot)) {
+          add(GameBoardHandleWining(playerTwoSymbolOrBot));
+          return;
+        }
 
-    gameBoard[index] = currentSymbol;
+        round++;
+        emit(GameBoardPressState(round: round, gameBoard: gameBoard));
 
-    // Check Winning
-    if (checkWinner(currentSymbol)) {
-      _handleWin(currentSymbol);
-      return;
-    }
+        if (round == 10) add(const GameBoardHandleTies());
+      }
+    });
 
-    round++;
-    emit(GameBoardPress(gameBoard: gameBoard, round: round));
+    on<GameBoardHandleWining>((event, emit) async {
+      if (isPlayerVsBot) {
+        if (event.winnerSymbol == playerOneSymbol) {
+          playerOneScore++;
+        } else {
+          botScore++;
+        }
+      } else {
+        if (event.winnerSymbol == playerOneSymbol) {
+          playerOneScore++;
+        } else {
+          playerTwoScore++;
+        }
+      }
 
-    // If Ties( Draw )
-    if (round == 10) {
-      _handleTie();
-      return;
-    }
+      emit(GameBoardWin(winnerSymbol: event.winnerSymbol));
+      await Future.delayed(Duration(seconds: 1));
+      add(const GameBoardReset());
+    });
 
-    if (isPlayerVsBot && currentSymbol != botSymbol) {
-      await Future.delayed(Duration(milliseconds: 500));
-      _botMove();
-    }
-  }
+    on<GameBoardHandleTies>((event, emit) async {
+      tiesScore++;
+      emit(const GameBoardTies());
+      await Future.delayed(Duration(seconds: 1));
+      add(const GameBoardReset());
+    });
 
-  void _botMove() async {
-    if (round > 9) return;
+    on<GameBoardPress>((event, emit) async {
+      // Game Press Logic
+      String currentSymbol = round.isOdd ? 'x' : 'o';
+      if (gameBoard[event.index].isNotEmpty) {
+        emit(const GameBoardError(message: 'Wrong!, Filled Cell\nTry again.'));
+        return;
+      }
 
-    int botMoveIndex = -1;
+      if (isPlayerVsBot && currentSymbol != playerOneSymbol) {
+        emit(const GameBoardError(message: 'Bot Playing!'));
+        return;
+      }
 
-    switch (VarManager.botMode) {
-      case 0:
-        botMoveIndex = _easyMode();
-        break;
-      case 1:
-        botMoveIndex = _mediumMode();
-        break;
-      case 2:
-        botMoveIndex = _hardMode();
-        break;
-    }
+      // PvP Logic
+      gameBoard[event.index] = currentSymbol;
 
-    if (botMoveIndex != -1 && gameBoard[botMoveIndex].isEmpty) {
-      await Future.delayed(Duration(milliseconds: 500));
-      gameBoard[botMoveIndex] = botSymbol;
-
-      if (checkWinner(botSymbol)) {
-        _handleWin(botSymbol);
+      // Check Winning
+      if (checkWinnerCustom(gameBoard, currentSymbol)) {
+        add(GameBoardHandleWining(currentSymbol));
         return;
       }
 
       round++;
-      emit(GameBoardPress(gameBoard: gameBoard, round: round));
+      emit(GameBoardPressState(gameBoard: gameBoard, round: round));
 
-      if (round == 10) _handleTie();
-    }
+      // If Ties( Draw )
+      if (round == 10) {
+        add(const GameBoardHandleTies());
+        return;
+      }
+
+      // Bot Logic
+      if (isPlayerVsBot) {
+        add(const GameBoardBotMoveEvent());
+      }
+    });
+
+    on<GameBoardNavToHome>((event, emit) {
+      _resetGameData();
+      emit(GameBoardInitial(gameBoard: List.filled(9, ''), round: 1));
+    });
+
+    on<GameBoardReset>((event, emit) {
+      gameBoard = List.filled(9, '');
+      round = 1;
+      emit(GameBoardInitial(gameBoard: List.filled(9, ''), round: 1));
+      if (isPlayerVsBot && playerTwoSymbolOrBot == 'x') {
+        add(const GameBoardBotMoveEvent());
+      }
+    });
+  }
+
+  void _resetGameData() {
+    dev.log('Resetting game data - Previous state: ${state.runtimeType}');
+
+    // Reset scores
+    final previousScores = {
+      'player1': playerOneScore,
+      'player2': playerTwoScore,
+      'ties': tiesScore,
+      'bot': botScore,
+    };
+    dev.log('Previous scores: $previousScores');
+
+    playerOneScore = 0;
+    playerTwoScore = 0;
+    tiesScore = 0;
+    botScore = 0;
+
+    // Reset game settings
+    dev.log('Resetting bot mode from: ${VarManager.botMode}');
+    VarManager.botMode = 0;
+
+    // Reset player information
+    dev.log(
+      'Resetting player info - P1: ${VarManager.playerOneName}, P2: ${VarManager.playerTwoName}',
+    );
+    VarManager.playerOneName = '';
+    VarManager.playerTwoName = '';
+    VarManager.playerOneSymbol = '';
+    VarManager.playerTwoSymbol = '';
+
+    // Reset bloc state
+    playerOneSymbol = '';
+    playerTwoSymbolOrBot = '';
+    isPlayerVsBot = false;
+    round = 1;
+    gameBoard = List.filled(9, '');
+
+    dev.log('Game data reset completed');
   }
 
   int _easyMode() {
@@ -109,10 +207,10 @@ class GameBoardCubit extends Cubit<GameBoardState> {
   }
 
   int _mediumMode() {
-    int winMove = _findWinningMove(botSymbol);
+    int winMove = _findWinningMove(playerTwoSymbolOrBot);
     if (winMove != -1) return winMove;
 
-    int blockMove = _findWinningMove(playerSymbol);
+    int blockMove = _findWinningMove(playerOneSymbol);
     if (blockMove != -1) return blockMove;
 
     if (gameBoard[4].isEmpty) return 4;
@@ -127,9 +225,9 @@ class GameBoardCubit extends Cubit<GameBoardState> {
 
   int _hardMode() {
     // Quick wins/blocks first
-    int winMove = _findWinningMove(botSymbol);
+    int winMove = _findWinningMove(playerTwoSymbolOrBot);
     if (winMove != -1) return winMove;
-    int blockMove = _findWinningMove(playerSymbol);
+    int blockMove = _findWinningMove(playerOneSymbol);
     if (blockMove != -1) return blockMove;
 
     // Find best move with minimax using a copy of the board
@@ -143,8 +241,14 @@ class GameBoardCubit extends Cubit<GameBoardState> {
     for (int i in emptyCells) {
       // Create a copy to avoid mutating gameBoard during minimax
       List<String> boardCopy = List.from(gameBoard);
-      boardCopy[i] = botSymbol;
-      int score = minimax(boardCopy, 0, false, botSymbol, playerSymbol);
+      boardCopy[i] = playerTwoSymbolOrBot;
+      int score = minimax(
+        boardCopy,
+        0,
+        false,
+        playerTwoSymbolOrBot,
+        playerOneSymbol,
+      );
 
       if (score > bestScore) {
         bestScore = score;
@@ -160,8 +264,8 @@ class GameBoardCubit extends Cubit<GameBoardState> {
     bool isMax,
     String botSymbol,
     String playerSymbol, [
-    int alpha = -999,
-    int beta = 999,
+    num alpha = -double.infinity,
+    num beta = double.infinity,
   ]) {
     // Terminal state checks
     if (checkWinnerCustom(newBoard, botSymbol)) return 10 - depth;
@@ -214,7 +318,6 @@ class GameBoardCubit extends Cubit<GameBoardState> {
     }
   }
 
-  /// Custom winner check that works on any board state
   bool checkWinnerCustom(List<String> board, String symbol) {
     // Check columns
     for (int i = 0; i <= 2; i++) {
@@ -248,122 +351,13 @@ class GameBoardCubit extends Cubit<GameBoardState> {
   int _findWinningMove(String symbol) {
     for (int i = 0; i < 9; i++) {
       if (gameBoard[i].isEmpty) {
-        gameBoard[i] = symbol;
-        bool wins = checkWinner(symbol);
-        gameBoard[i] = '';
-
-        if (wins) return i;
+        final List<String> boardCopy = List.from(gameBoard);
+        boardCopy[i] = symbol;
+        if (checkWinnerCustom(boardCopy, symbol)) return i;
       }
     }
     return -1;
   }
 
-  void _handleWin(String winnerSymbol) async {
-    if (isPlayerVsBot) {
-      if (winnerSymbol == playerSymbol) {
-        VarManager.playerOneScore++;
-      } else {
-        VarManager.botScore++;
-      }
-    } else {
-      if (winnerSymbol == VarManager.playerOneSymbol) {
-        VarManager.playerOneScore++;
-      } else {
-        VarManager.playerTwoScore++;
-      }
-    }
-
-    emit(GameBoardWin(gameBoard: gameBoard, winnerSymbol: winnerSymbol));
-    await Future.delayed(Duration(seconds: 1));
-    clearGameBoard();
-    emit(GameBoardInitial());
-  }
-
-  void _handleTie() async {
-    VarManager.tiesScore++;
-    emit(GameBoardTies(gameBoard: gameBoard));
-    await Future.delayed(Duration(seconds: 1));
-    clearGameBoard();
-    emit(GameBoardInitial());
-  }
-
-  void onCellPressedOld(int index) async {
-    if (gameBoard[index].isNotEmpty) return;
-
-    String currentSymbol = round.isOdd ? 'x' : 'o';
-
-    gameBoard[index] = currentSymbol;
-
-    // Check Winning
-    if (checkWinner(currentSymbol)) {
-      if (VarManager.playerOneSymbol == currentSymbol) {
-        VarManager.playerOneScore++;
-      } else {
-        VarManager.playerTwoScore++;
-      }
-      emit(GameBoardWin(gameBoard: gameBoard, winnerSymbol: currentSymbol));
-      await Future.delayed(Duration(seconds: 1));
-      clearGameBoard();
-      emit(GameBoardInitial());
-      return;
-    }
-
-    round++;
-    emit(GameBoardPress(gameBoard: gameBoard, round: round));
-
-    // If Ties( Draw )
-    if (round == 10) {
-      VarManager.tiesScore++;
-      emit(GameBoardTies(gameBoard: gameBoard));
-      await Future.delayed(Duration(seconds: 1));
-      clearGameBoard();
-      emit(GameBoardInitial());
-    }
-  }
-
-  bool checkWinner(String symbol) {
-    if (round < 5) return false;
-    // 0,3,6 Vertical
-    // 1,4,7 Vertical
-    // 2,5,8 Vertical
-    for (int i = 0; i <= 2; i++) {
-      if ([i, i + 3, i + 6].every((i) => gameBoard[i] == symbol)) return true;
-    }
-
-    // 0,1,2 Horizontal
-    // 3,4,5 Horizontal
-    // 6,7,8 Horizontal
-    for (int i = 0; i <= 6; i += 3) {
-      if ([i, i + 1, i + 2].every((i) => gameBoard[i] == symbol)) return true;
-    }
-
-    // 0,4,8 Diagonal
-    if ([0, 4, 8].every((i) => gameBoard[i] == symbol)) return true;
-    // 2,4,6 Diagonal
-    if ([2, 4, 6].every((i) => gameBoard[i] == symbol)) return true;
-
-    return false;
-  }
-
-  void clearGameBoard() {
-    gameBoard = List.filled(9, '');
-    round = 1;
-  }
-
-  void resetGame() {
-    clearGameBoard();
-    emit(GameBoardInitial());
-  }
-
-  void navToHome() {
-    VarManager.playerOneScore = 0;
-    VarManager.playerTwoScore = 0;
-    VarManager.tiesScore = 0;
-    VarManager.botScore = 0;
-    VarManager.botMode = 0;
-    VarManager.playerOneName = '';
-    VarManager.playerTwoName = '';
-    VarManager.playerOneSymbol = '';
-    VarManager.playerTwoSymbol = '';
-  }
+  // bool isBotTurn() {}
 }

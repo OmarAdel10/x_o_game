@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-{}
-=======
 {
   "pick_mode": "PICK MODE",
   "new_game_player": "NEW GAME ( VS PLAYER )",
@@ -55,6 +52,6 @@
   "v50": "50%",
   "v75": "75%",
   "v100": "100%",
-  "volume_percentage": "Volume Percentage"
+  "volume_percentage": "Volume Percentage",
+  "tie" : "TIE"
 }
->>>>>>> feature/Settings
