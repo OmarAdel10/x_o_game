@@ -8,25 +8,32 @@ import 'package:just_audio/just_audio.dart';
 
 class SettingsBloc extends HydratedBloc<SettingsEvent, SettingsState> {
   final musicPlayer = AudioPlayer();
+  final clickPlayer = AudioPlayer();
+  final successPlayer = AudioPlayer();
+  final losePlayer = AudioPlayer();
+
   SettingsBloc()
     : super(
         SettingsInitial(
           model: SettingsModel(
-            music: false,
-            soundEffects: false,
+            music: true,
+            soundEffects: true,
             language: 'en',
             volume: 1.0,
           ),
         ),
       ) {
-    _preloadAudio();
-    _initializeAudioState();
+    _initialize();
+
     on<MusicToggle>((event, emit) async {
-      musicPlayer.setVolume(state.model.volume);
+      await musicPlayer.setVolume(state.model.volume);
       final newMusicState = !state.model.music;
       emit(
         SettingsUpdate(
-          model: state.model.copyWith(music: !state.model.music, volume: 1),
+          model: state.model.copyWith(
+            music: !state.model.music,
+            volume: state.model.volume,
+          ),
         ),
       );
       if (newMusicState) {
@@ -70,6 +77,39 @@ class SettingsBloc extends HydratedBloc<SettingsEvent, SettingsState> {
       );
     });
 
+    on<ClickSound>((event, emit) async {
+      if (state.model.soundEffects) {
+        try {
+          await clickPlayer.seek(Duration.zero);
+          await clickPlayer.play();
+        } catch (e) {
+          log('Error playing click sound: $e');
+        }
+      }
+    });
+
+    on<SuccessSound>((event, emit) async {
+      if (state.model.soundEffects) {
+        try {
+          await successPlayer.seek(Duration.zero);
+          successPlayer.play();
+        } catch (e) {
+          log('Error playing success sound: $e');
+        }
+      }
+    });
+
+    on<LoseSound>((event, emit) async {
+      if (state.model.soundEffects) {
+        try {
+          await losePlayer.seek(Duration.zero);
+          losePlayer.play();
+        } catch (e) {
+          log('Error playing lose sound: $e');
+        }
+      }
+    });
+
     on<LanguageUpdate>((event, emit) {
       emit(
         SettingsUpdate(model: state.model.copyWith(language: event.language)),
@@ -94,10 +134,30 @@ class SettingsBloc extends HydratedBloc<SettingsEvent, SettingsState> {
     return {"settingsState": state.model.toMap()};
   }
 
+  Future<void> _initialize() async {
+    await _preloadAudio();
+    await _initializeAudioState();
+  }
+
   Future<void> _preloadAudio() async {
     try {
       await musicPlayer.setAudioSource(
         AudioSource.asset('assets/sounds/Rubiks-Dodecahedron.mp3'),
+        initialPosition: Duration.zero,
+        preload: true,
+      );
+      await clickPlayer.setAudioSource(
+        AudioSource.asset('assets/sounds/click.mp3'),
+        initialPosition: Duration.zero,
+        preload: true,
+      );
+      await successPlayer.setAudioSource(
+        AudioSource.asset('assets/sounds/success.mp3'),
+        initialPosition: Duration.zero,
+        preload: true,
+      );
+      await losePlayer.setAudioSource(
+        AudioSource.asset('assets/sounds/lose.mp3'),
         initialPosition: Duration.zero,
         preload: true,
       );
@@ -123,6 +183,12 @@ class SettingsBloc extends HydratedBloc<SettingsEvent, SettingsState> {
     try {
       await musicPlayer.stop();
       await musicPlayer.dispose();
+      await clickPlayer.stop();
+      await clickPlayer.dispose();
+      await successPlayer.stop();
+      await successPlayer.dispose();
+      await losePlayer.stop();
+      await losePlayer.dispose();
     } catch (e) {
       log('Error disposing audio player: $e');
     }

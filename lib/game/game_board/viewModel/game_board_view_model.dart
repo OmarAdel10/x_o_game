@@ -59,7 +59,7 @@ class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
       }
 
       if (botMoveIndex != -1 && gameBoard[botMoveIndex].isEmpty) {
-        await Future.delayed(Duration(milliseconds: 500));
+        await Future.delayed(Duration(seconds: 1));
         gameBoard[botMoveIndex] = playerTwoSymbolOrBot;
 
         if (checkWinnerCustom(gameBoard, playerTwoSymbolOrBot)) {
@@ -75,6 +75,7 @@ class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
     });
 
     on<GameBoardHandleWining>((event, emit) async {
+      
       if (isPlayerVsBot) {
         if (event.winnerSymbol == playerOneSymbol) {
           playerOneScore++;
@@ -106,11 +107,6 @@ class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
       String currentSymbol = round.isOdd ? 'x' : 'o';
       if (gameBoard[event.index].isNotEmpty) {
         emit(const GameBoardError(message: 'Wrong!, Filled Cell\nTry again.'));
-        return;
-      }
-
-      if (isPlayerVsBot && currentSymbol != playerOneSymbol) {
-        emit(const GameBoardError(message: 'Bot Playing!'));
         return;
       }
 

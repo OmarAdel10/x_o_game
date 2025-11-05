@@ -11,6 +11,7 @@ import 'package:x_o_game/game/game_board/viewModel/game_board_states.dart';
 import 'package:x_o_game/game/game_board/viewModel/game_board_view_model.dart';
 import 'package:x_o_game/generated/l10n.dart';
 import 'package:x_o_game/home/home/view/screens/home_screen.dart';
+import 'package:x_o_game/home/settings/viewModel/settings_events.dart';
 import 'package:x_o_game/home/settings/viewModel/settings_view_model.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/assets_manager.dart';
@@ -41,9 +42,11 @@ class GameBoardScreen extends StatelessWidget {
         listenWhen: (previous, current) =>
             current is GameBoardError ||
             current is GameBoardWin ||
-            current is GameBoardTies,
+            current is GameBoardTies ||
+            current is GameBoardPressState,
         listener: (context, state) {
-          final bloc = context.read<GameBoardBloc>();
+          final gameBloc = context.read<GameBoardBloc>();
+          final settingsBloc = context.read<SettingsBloc>();
           if (state is GameBoardError) {
             showTopSnackBar(
               Overlay.of(context),
@@ -60,6 +63,7 @@ class GameBoardScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 8),
             );
           } else if (state is GameBoardWin) {
+            context.read<SettingsBloc>().add(SuccessSound());
             showDialog(
               context: context,
               barrierColor: Colors.black.withValues(alpha: 0.7),
@@ -80,9 +84,7 @@ class GameBoardScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        state.winnerSymbol == VarManager.playerOneSymbol
-                            ? '${VarManager.playerOneName} ${localization.game_wins}'
-                            : '${VarManager.playerTwoName} ${localization.game_wins}',
+                        '${state.winnerSymbol == VarManager.playerOneSymbol ? VarManager.playerOneName : VarManager.playerTwoName} ${localization.game_wins}',
                         style: GoogleFonts.roboto(
                           color:
                               state.winnerSymbol == VarManager.playerOneSymbol
@@ -104,7 +106,7 @@ class GameBoardScreen extends StatelessWidget {
                                 Navigator.of(context)
                                     .pushReplacementNamed(HomeScreen.routeName)
                                     .then(
-                                      (_) => bloc.add(GameBoardNavToHome()),
+                                      (_) => gameBloc.add(GameBoardNavToHome()),
                                     );
                               },
                               height: 42,
@@ -132,6 +134,7 @@ class GameBoardScreen extends StatelessWidget {
               ),
             );
           } else if (state is GameBoardTies) {
+            context.read<SettingsBloc>().add(LoseSound());
             showDialog(
               context: context,
               barrierColor: Colors.black.withValues(alpha: 0.7),
@@ -163,7 +166,7 @@ class GameBoardScreen extends StatelessWidget {
                                 Navigator.of(context)
                                     .pushReplacementNamed(HomeScreen.routeName)
                                     .then(
-                                      (_) => bloc.add(GameBoardNavToHome()),
+                                      (_) => gameBloc.add(GameBoardNavToHome()),
                                     );
                               },
                               height: 42,
@@ -190,6 +193,8 @@ class GameBoardScreen extends StatelessWidget {
                 ),
               ),
             );
+          } else if (state is GameBoardPressState) {
+            context.read<SettingsBloc>().add(ClickSound());
           }
         },
         child: Scaffold(
@@ -207,13 +212,13 @@ class GameBoardScreen extends StatelessWidget {
                       children: [
                         BlocBuilder<GameBoardBloc, GameBoardState>(
                           builder: (context, state) {
-                            final bloc = context.read<GameBoardBloc>();
+                            final gameBloc = context.read<GameBoardBloc>();
                             return GestureDetector(
                               onTap: () {
                                 Navigator.of(context)
                                     .pushReplacementNamed(HomeScreen.routeName)
                                     .then(
-                                      (_) => bloc.add(GameBoardNavToHome()),
+                                      (_) => gameBloc.add(GameBoardNavToHome()),
                                     );
                               },
                               child: Container(
@@ -271,7 +276,7 @@ class GameBoardScreen extends StatelessWidget {
                                         fontWeight: FontWeightManager.semiBold,
                                       ),
                                     )
-                                  :  Row(
+                                  : Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
@@ -351,9 +356,14 @@ class GameBoardScreen extends StatelessWidget {
                       child: BlocBuilder<GameBoardBloc, GameBoardState>(
                         builder: (context, state) {
                           return IgnorePointer(
-                            ignoring: context
-                                .read<GameBoardBloc>()
-                                .isPlayerVsBot,
+                            ignoring:
+                                context.read<GameBoardBloc>().isPlayerVsBot &&
+                                (context.read<GameBoardBloc>().round.isOdd
+                                        ? 'x'
+                                        : 'o') !=
+                                    context
+                                        .read<GameBoardBloc>()
+                                        .playerOneSymbol,
                             child: GridView.builder(
                               padding: EdgeInsets.symmetric(horizontal: 8),
                               physics: NeverScrollableScrollPhysics(),
