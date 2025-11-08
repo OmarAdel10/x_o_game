@@ -5,9 +5,13 @@ import 'dart:math';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:x_o_game/game/game_board/viewModel/game_board_events.dart';
 import 'package:x_o_game/game/game_board/viewModel/game_board_states.dart';
+import 'package:x_o_game/home/statistics/viewModel/statistics_events.dart';
+import 'package:x_o_game/home/statistics/viewModel/statistics_view_model.dart';
+import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/var_manager.dart';
 
 class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
+  final StatisticsBloc statBloc;
   bool isPlayerVsBot = false;
   String playerOneSymbol = '';
   String playerTwoSymbolOrBot = '';
@@ -18,7 +22,7 @@ class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
   int botScore = 0;
   int tiesScore = 0;
 
-  GameBoardBloc()
+  GameBoardBloc({required this.statBloc})
     : super(GameBoardInitial(round: 1, gameBoard: List.filled(9, ''))) {
     on<GameBoardInitialEvent>((event, emit) {
       try {
@@ -75,18 +79,80 @@ class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
     });
 
     on<GameBoardHandleWining>((event, emit) async {
-      
       if (isPlayerVsBot) {
+        statBloc.add(PlayerVsBotEvent());
+        statBloc.add(
+          VarManager.botMode == 0
+              ? EasyModeTotalGamesEvent()
+              : VarManager.botMode == 1
+              ? MeduimModeTotalGamesEvent()
+              : HardModeTotalGamesEvent(),
+        );
+
         if (event.winnerSymbol == playerOneSymbol) {
+          statBloc.add(
+            VarManager.botMode == 0
+                ? EasyModeWinsEvent()
+                : VarManager.botMode == 1
+                ? MeduimModeWinsEvent()
+                : HardModeWinsEvent(),
+          );
+
+          statBloc.add(
+            RecentGamesEvent(
+              modeName: _modeName(),
+              gameResult: '${VarManager.playerOneName} Won',
+              gameDate: DateTime.now(),
+              gameResultColor: Apptheme.lightBlue,
+            ),
+          );
+
           playerOneScore++;
+
         } else {
+
+          statBloc.add(
+            RecentGamesEvent(
+              modeName: _modeName(),
+              gameResult: '${VarManager.botName} Won',
+              gameDate: DateTime.now(),
+              gameResultColor: Apptheme.lightYellow,
+            ),
+          );
+
           botScore++;
+
         }
       } else {
+
+        statBloc.add(PlayerVsPlayerEvent());
+
         if (event.winnerSymbol == playerOneSymbol) {
+
+          statBloc.add(
+            RecentGamesEvent(
+              modeName: _modeName(),
+              gameResult: '${VarManager.playerOneName} Won',
+              gameDate: DateTime.now(),
+              gameResultColor: Apptheme.lightBlue,
+            ),
+          );
+
           playerOneScore++;
+
         } else {
+
+          statBloc.add(
+            RecentGamesEvent(
+              modeName: _modeName(),
+              gameResult: '${VarManager.playerTwoName} Won',
+              gameDate: DateTime.now(),
+              gameResultColor: Apptheme.lightYellow,
+            ),
+          );
+
           playerTwoScore++;
+
         }
       }
 
@@ -97,6 +163,24 @@ class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
 
     on<GameBoardHandleTies>((event, emit) async {
       tiesScore++;
+      statBloc.add(DrawsEvent());
+      if (isPlayerVsBot) {
+        statBloc.add(
+          VarManager.botMode == 0
+              ? EasyModeTotalGamesEvent()
+              : VarManager.botMode == 1
+              ? MeduimModeTotalGamesEvent()
+              : HardModeTotalGamesEvent(),
+        );
+      }
+      statBloc.add(
+        RecentGamesEvent(
+          modeName: _modeName(),
+          gameResult: 'Draw',
+          gameDate: DateTime.now(),
+          gameResultColor: Apptheme.silver,
+        ),
+      );
       emit(const GameBoardTies());
       await Future.delayed(Duration(seconds: 1));
       add(const GameBoardReset());
@@ -355,5 +439,11 @@ class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
     return -1;
   }
 
-  // bool isBotTurn() {}
+  String _modeName() {
+    if (isPlayerVsBot) {
+      return '${VarManager.playerOneName} Vs ${VarManager.botName}';
+    } else {
+      return '${VarManager.playerOneName} Vs ${VarManager.playerTwoName}';
+    }
+  }
 }

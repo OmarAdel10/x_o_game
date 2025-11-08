@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 {
   "pick_mode": "PICK MODE",
   "new_game_player": "NEW GAME ( VS PLAYER )",
@@ -55,3 +56,6 @@
   "volume_percentage": "Volume Percentage",
   "tie" : "TIE"
 }
+=======
+{}
+>>>>>>> Stashed changes

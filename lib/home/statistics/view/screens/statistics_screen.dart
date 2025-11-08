@@ -8,6 +8,8 @@ import 'package:x_o_game/home/settings/viewModel/settings_view_model.dart';
 import 'package:x_o_game/home/statistics/view/widgets/bot_challenge_container_item.dart';
 import 'package:x_o_game/home/statistics/view/widgets/overall_stats_container_item.dart';
 import 'package:x_o_game/home/statistics/view/widgets/recent_games_container_item.dart';
+import 'package:x_o_game/home/statistics/viewModel/statistics_states.dart';
+import 'package:x_o_game/home/statistics/viewModel/statistics_view_model.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
 
@@ -22,69 +24,6 @@ class StatisticsScreen extends StatefulWidget {
 class _StatisticsScreenState extends State<StatisticsScreen> {
   final scrollController = ScrollController();
 
-  final List<Widget> recentItems = [
-    RecentGamesContainerItem(
-      modeName: 'Player 1 vs Player 2',
-      gameDate: '10/3/2025',
-      gameResult: 'Draw',
-      gameResultColor: Apptheme.silver,
-    ),
-    RecentGamesContainerItem(
-      modeName: 'Player 1 vs Player 2',
-      gameDate: '10/3/2025',
-      gameResult: 'Player 2 Won',
-      gameResultColor: Apptheme.lightBlue,
-    ),
-    RecentGamesContainerItem(
-      modeName: 'Player 1 vs Player 2',
-      gameDate: '10/3/2025',
-      gameResult: 'Player 1 Won',
-      gameResultColor: Apptheme.silver,
-    ),
-    RecentGamesContainerItem(
-      modeName: 'Player 1 vs Player 2',
-      gameDate: '10/3/2025',
-      gameResult: 'Player 2 Won',
-      gameResultColor: Apptheme.silver,
-    ),
-    RecentGamesContainerItem(
-      modeName: 'Player 1 vs Player 2',
-      gameDate: '10/3/2025',
-      gameResult: 'Player 1 Won',
-      gameResultColor: Apptheme.silver,
-    ),
-    RecentGamesContainerItem(
-      modeName: 'Player 1 vs Bot',
-      gameDate: '10/3/2025',
-      gameResult: 'Bot Won',
-      gameResultColor: Apptheme.silver,
-    ),
-    RecentGamesContainerItem(
-      modeName: 'Player 1 vs Bot',
-      gameDate: '10/3/2025',
-      gameResult: 'Draw',
-      gameResultColor: Apptheme.silver,
-    ),
-    RecentGamesContainerItem(
-      modeName: 'Player 1 vs Bot',
-      gameDate: '10/3/2025',
-      gameResult: 'Player 1 Won',
-      gameResultColor: Apptheme.silver,
-    ),
-    RecentGamesContainerItem(
-      modeName: 'Player 1 vs Bot',
-      gameDate: '10/3/2025',
-      gameResult: 'Player 1 Won',
-      gameResultColor: Apptheme.silver,
-    ),
-    RecentGamesContainerItem(
-      modeName: 'Player 1 vs Bot',
-      gameDate: '10/3/2025',
-      gameResult: 'Player 1 Won',
-      gameResultColor: Apptheme.silver,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final localization = S.of(context);
@@ -98,7 +37,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: MediaQuery.sizeOf(context).height * 0.03),
-
+    
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -174,17 +113,33 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           Row(
                             children: [
                               Expanded(
-                                child: OverallStatsContainerItem(
-                                  statNumber: 28,
-                                  statText: localization.total_games,
-                                ),
+                                child:
+                                    BlocBuilder<
+                                      StatisticsBloc,
+                                      StatisticsState
+                                    >(
+                                      builder: (context, state) {
+                                        return OverallStatsContainerItem(
+                                          statNumber: state.model.totalGames,
+                                          statText: localization.total_games,
+                                        );
+                                      },
+                                    ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: OverallStatsContainerItem(
-                                  statNumber: 7,
-                                  statText: localization.draws,
-                                ),
+                                child:
+                                    BlocBuilder<
+                                      StatisticsBloc,
+                                      StatisticsState
+                                    >(
+                                      builder: (context, state) {
+                                        return OverallStatsContainerItem(
+                                          statNumber: state.model.draws,
+                                          statText: localization.draws,
+                                        );
+                                      },
+                                    ),
                               ),
                             ],
                           ),
@@ -192,19 +147,37 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           Row(
                             children: [
                               Expanded(
-                                child: OverallStatsContainerItem(
-                                  statNumber: 9,
-                                  statText: localization.pvp_games,
-                                  statNumberColor: Apptheme.lightBlue,
-                                ),
+                                child:
+                                    BlocBuilder<
+                                      StatisticsBloc,
+                                      StatisticsState
+                                    >(
+                                      builder: (context, state) {
+                                        return OverallStatsContainerItem(
+                                          statNumber:
+                                              state.model.playerVsPlayer,
+                                          statText: localization.pvp_games,
+                                          statNumberColor: Apptheme.lightBlue,
+                                        );
+                                      },
+                                    ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: OverallStatsContainerItem(
-                                  statNumber: 19,
-                                  statText: localization.vs_bot,
-                                  statNumberColor: Apptheme.lightYellow,
-                                ),
+                                child:
+                                    BlocBuilder<
+                                      StatisticsBloc,
+                                      StatisticsState
+                                    >(
+                                      builder: (context, state) {
+                                        return OverallStatsContainerItem(
+                                          statNumber: state.model.playerVsBot,
+                                          statText: localization.vs_bot,
+                                          statNumberColor:
+                                              Apptheme.lightYellow,
+                                        );
+                                      },
+                                    ),
                               ),
                             ],
                           ),
@@ -213,7 +186,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     ),
                   ),
                 ),
-
+    
                 const SizedBox(height: 32),
                 // Bot Challenge Stats Card
                 Card(
@@ -257,35 +230,69 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ],
                           ),
                           const SizedBox(height: 8),
-
-                          Column(
-                            children: [
-                              BotChallengeContainerItem(
-                                modeText: localization.easy,
-                                winingPercentNumber: 0,
-                                totalGamesInThisMode: 0,
-                                totalWiningsInThisMode: 0,
-                              ),
-                              BotChallengeContainerItem(
-                                modeText: localization.medium,
-                                winingPercentNumber: 42,
-                                totalGamesInThisMode: 8,
-                                totalWiningsInThisMode: 19,
-                              ),
-                              BotChallengeContainerItem(
-                                modeText: localization.hard,
-                                winingPercentNumber: 0,
-                                totalGamesInThisMode: 0,
-                                totalWiningsInThisMode: 0,
-                              ),
-                            ],
+    
+                          BlocBuilder<StatisticsBloc, StatisticsState>(
+                            builder: (context, state) {
+                              return Column(
+                                children: [
+                                  BotChallengeContainerItem(
+                                    modeText: localization.easy,
+                                    winingPercentNumber:
+                                        state.model.easyModeTotalGames > 0
+                                        ? ((state.model.easyModeWins /
+                                                      state
+                                                          .model
+                                                          .easyModeTotalGames) *
+                                                  100)
+                                              .toInt()
+                                        : 0,
+                                    totalGamesInThisMode:
+                                        state.model.easyModeTotalGames,
+                                    totalWiningsInThisMode:
+                                        state.model.easyModeWins,
+                                  ),
+                                  BotChallengeContainerItem(
+                                    modeText: localization.medium,
+                                    winingPercentNumber:
+                                        state.model.mediumModeTotalGames > 0
+                                        ? ((state.model.mediumModeWins /
+                                                      state
+                                                          .model
+                                                          .mediumModeTotalGames) *
+                                                  100)
+                                              .toInt()
+                                        : 0,
+                                    totalGamesInThisMode:
+                                        state.model.mediumModeTotalGames,
+                                    totalWiningsInThisMode:
+                                        state.model.mediumModeWins,
+                                  ),
+                                  BotChallengeContainerItem(
+                                    modeText: localization.hard,
+                                    winingPercentNumber:
+                                        state.model.hardModeTotalGames > 0
+                                        ? ((state.model.hardModeWins /
+                                                      state
+                                                          .model
+                                                          .hardModeTotalGames) *
+                                                  100)
+                                              .toInt()
+                                        : 0,
+                                    totalGamesInThisMode:
+                                        state.model.hardModeTotalGames,
+                                    totalWiningsInThisMode:
+                                        state.model.hardModeWins,
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                         ],
                       ),
                     ),
                   ),
                 ),
-
+    
                 const SizedBox(height: 32),
                 // Recent Games Card
                 Card(
@@ -329,40 +336,61 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
-
-                          SizedBox(
-                            height: MediaQuery.sizeOf(context).height * 0.3,
-                            child: ScrollbarTheme(
-                              data: ScrollbarThemeData(
-                                interactive: false,
-                                thickness: WidgetStateProperty.all(1),
-                                thumbColor: WidgetStateProperty.all(
-                                  Apptheme.silver.withValues(alpha: 0.4),
-                                ),
-                                radius: const Radius.circular(10),
-                                minThumbLength: 3,
-                                mainAxisMargin: 4,
-                                crossAxisMargin: -1,
-                              ),
-                              child: Scrollbar(
-                                controller: scrollController,
-                                thumbVisibility: true,
-                                child: ListView.separated(
-                                  controller: scrollController,
-                                  itemBuilder: (_, index) => recentItems[index],
-                                  separatorBuilder: (_, index) =>
-                                      const SizedBox(height: 5),
-                                  itemCount: recentItems.length,
-                                ),
-                              ),
-                            ),
+    
+                          BlocBuilder<StatisticsBloc, StatisticsState>(
+                            builder: (context, state) {
+                              return state.model.recentGames.isNotEmpty
+                                  ? SizedBox(
+                                      height:
+                                          state.model.recentGames.length == 3 ? MediaQuery.sizeOf(context).height *
+                                                0.25 : MediaQuery.sizeOf(context).height *
+                                          0.3,
+                                      child: ScrollbarTheme(
+                                        data: ScrollbarThemeData(
+                                          interactive: false,
+                                          thickness: WidgetStateProperty.all(
+                                            1,
+                                          ),
+                                          thumbColor: WidgetStateProperty.all(
+                                            Apptheme.silver.withValues(
+                                              alpha: 0.4,
+                                            ),
+                                          ),
+                                          radius: const Radius.circular(10),
+                                          minThumbLength: 3,
+                                          mainAxisMargin: 4,
+                                          crossAxisMargin: -1,
+                                        ),
+                                        child: Scrollbar(
+                                          controller: scrollController,
+                                          thumbVisibility: true,
+                                          child: ListView.separated(
+                                            controller: scrollController,
+                                            itemBuilder: (_, index) =>
+                                                RecentGamesContainerItem(
+                                                  model: state
+                                                      .model
+                                                      .recentGames[index],
+                                                ),
+                                            separatorBuilder: (_, index) =>
+                                                const SizedBox(height: 5),
+                                            itemCount: state
+                                                .model
+                                                .recentGames
+                                                .length,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox();
+                            },
                           ),
                         ],
                       ),
                     ),
                   ),
                 ),
-
+    
                 SizedBox(height: MediaQuery.sizeOf(context).height * 0.04),
               ],
             ),
