@@ -37,10 +37,7 @@ dependencies:
   auto_size_text: ^3.0.0
   flutter_bloc: ^9.1.1
   google_fonts: ^6.3.2
-<<<<<<< Updated upstream
   lottie: ^3.3.1
-=======
->>>>>>> Stashed changes
   hydrated_bloc: ^10.1.1
   equatable: ^2.0.7
   path_provider: ^2.1.5

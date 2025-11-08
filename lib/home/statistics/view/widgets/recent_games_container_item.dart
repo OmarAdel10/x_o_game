@@ -1,21 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:x_o_game/home/statistics/data/models/recent_games_model.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 import 'package:x_o_game/shared/managers/font_manager.dart';
 
 class RecentGamesContainerItem extends StatelessWidget {
-  const RecentGamesContainerItem({
-    super.key,
-    required this.modeName,
-    required this.gameDate,
-    required this.gameResult,
-    required this.gameResultColor,
-  });
+  final RecentGamesModel model;
 
-  final String modeName;
-  final String gameDate;
-  final String gameResult;
-  final Color gameResultColor;
+  const RecentGamesContainerItem({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +28,7 @@ class RecentGamesContainerItem extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        modeName,
+                        model.modeName,
                         style: GoogleFonts.roboto(
                           color: Apptheme.silver,
                           fontSize: FontSizeManager.bodySmall,
@@ -46,7 +38,7 @@ class RecentGamesContainerItem extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    gameDate,
+                    '${model.gameDate.day} / ${model.gameDate.month} / ${model.gameDate.year}',
                     style: GoogleFonts.roboto(
                       color: Apptheme.silver.withValues(alpha: 0.6),
                       fontSize: FontSizeManager.tiny,
@@ -57,9 +49,9 @@ class RecentGamesContainerItem extends StatelessWidget {
               ),
               Spacer(),
               Text(
-                gameResult,
+                model.gameResult,
                 style: GoogleFonts.roboto(
-                  color: gameResultColor,
+                  color: model.gameResultColor,
                   fontSize: FontSizeManager.bodySmall,
                   fontWeight: FontWeightManager.sectionTitles,
                 ),
