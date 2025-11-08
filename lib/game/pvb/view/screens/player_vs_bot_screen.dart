@@ -1,9 +1,14 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:x_o_game/game/flipping_coin/view/screens/flipping_coin_screen.dart';
+import 'package:x_o_game/game/pvb/view/widgets/difficulty_selector.dart';
+import 'package:x_o_game/game/pvb/view/widgets/slider_components_widget.dart';
+import 'package:x_o_game/game/pvb/view/widgets/slider_widget.dart';
 import 'package:x_o_game/generated/l10n.dart';
 import 'package:x_o_game/home/settings/viewModel/settings_view_model.dart';
 import 'package:x_o_game/shared/apptheme.dart';
@@ -12,31 +17,15 @@ import 'package:x_o_game/shared/managers/var_manager.dart';
 import 'package:x_o_game/shared/widgets/custom_button.dart';
 import 'package:x_o_game/shared/widgets/custom_text_field.dart';
 
-class PlayerVsBotScreen extends StatefulWidget {
+class PlayerVsBotScreen extends StatelessWidget {
   static const String routeName = 'pvb';
-  const PlayerVsBotScreen({super.key});
+  PlayerVsBotScreen({super.key});
 
-  @override
-  State<PlayerVsBotScreen> createState() => _PlayerVsBotScreenState();
-}
-
-class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
   final TextEditingController playerOneNameController = TextEditingController();
-  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     final localization = S.of(context);
-    final difficultyModeContainerEmojis = ['😊', '🤔', '😈'];
-    final difficultyModeContainerQuotes = [
-      (localization.Ill_go_easy_on_you),
-      (localization.This_should_be_fun),
-      (localization.You_asked_for_it),
-    ];
-    final sliderLabels = [localization.easy, localization.medium, localization.hard];
-    final double min = 0;
-    final double max = sliderLabels.length - 1.0;
-    final int divisions = sliderLabels.length - 1;
 
     final GlobalKey<FormState> formKey = GlobalKey();
 
@@ -50,226 +39,196 @@ class _PlayerVsBotScreenState extends State<PlayerVsBotScreen> {
               children: [
                 SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        if (Navigator.of(context).canPop()) {
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      icon: Icon(
-                        context.read<SettingsBloc>().state.model.language == 'en' ? CupertinoIcons.arrow_left : CupertinoIcons.arrow_right,
-                        size: 24,
-                        color: Apptheme.silver,
-                      ),
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            if (Navigator.of(context).canPop()) {
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          icon: Icon(
+                            context.read<SettingsBloc>().state.model.language ==
+                                    'en'
+                                ? CupertinoIcons.arrow_left
+                                : CupertinoIcons.arrow_right,
+                            size: 24,
+                            color: Apptheme.silver,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        AutoSizeText(
+                          localization.bot_challenge,
+                          style: GoogleFonts.roboto(
+                            color: Apptheme.silver,
+                            fontSize: FontSizeManager.header,
+                            fontWeight: FontWeightManager.bold,
+                          ),
+                        ),
+                      ],
+                    )
+                    .animate()
+                    .fadeIn(
+                      begin: 0,
+                      delay: Duration(milliseconds: 200),
+                      duration: Duration(milliseconds: 600),
+                      curve: Curves.easeInOut,
+                    )
+                    .slideX(
+                      begin: -0.2,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
                     ),
-                    const SizedBox(width: 20),
-                    AutoSizeText(
-                      localization.bot_challenge,
-                      style: GoogleFonts.roboto(
-                        color: Apptheme.silver,
-                        fontSize: FontSizeManager.header,
-                        fontWeight: FontWeightManager.bold,
-                      ),
-                    ),
-                  ],
-                ),
                 const SizedBox(height: 32),
                 Form(
                   key: formKey,
-                  child: Card(
-                    elevation: 8,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Apptheme.semiDarkNavy,
-                        borderRadius: BorderRadius.circular(11),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Apptheme.shadowDark,
-                            offset: const Offset(0, 8),
-                            blurRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    localization.player_one_name,
-                                    style: GoogleFonts.roboto(
-                                      color: Apptheme.silver,
-                                      fontSize: FontSizeManager.bodySmall,
-                                      fontWeight: FontWeightManager.regular,
-                                    ),
+                  child:
+                      Card(
+                            elevation: 8,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Apptheme.semiDarkNavy,
+                                borderRadius: BorderRadius.circular(11),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Apptheme.shadowDark,
+                                    offset: const Offset(0, 8),
+                                    blurRadius: 0,
                                   ),
-                                  const SizedBox(height: 8),
-                                  CustomTextField(
-                                    controller: playerOneNameController,
-                                    hintText: localization.enter_name,
-                                  ),
-
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    localization.bot_difficulty,
-                                    style: GoogleFonts.roboto(
-                                      color: Apptheme.silver,
-                                      fontSize: FontSizeManager.bodySmall,
-                                      fontWeight: FontWeightManager.regular,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
                                 ],
                               ),
-                            ),
-
-                            SliderTheme(
-                              data: SliderThemeData(
-                                activeTickMarkColor: Colors.transparent,
-                                activeTrackColor: Apptheme.deepDarkNavy,
-                                inactiveTickMarkColor: Colors.transparent,
-                                inactiveTrackColor: Apptheme.deepDarkNavy,
-                                thumbColor: Apptheme.lightBlue,
-                                thumbShape: RoundSliderThumbShape(
-                                  enabledThumbRadius: 15,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 20,
                                 ),
-                                valueIndicatorColor: Colors.transparent,
-                                trackHeight: 30,
-                              ),
-                              child: Slider(
-                                value: _currentIndex.toDouble(),
-                                min: min,
-                                max: max,
-                                divisions: divisions,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _currentIndex = value.toInt();
-                                    VarManager.botMode = _currentIndex;
-                                  });
-                                },
-                              ),
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                              ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: sliderLabels
-                                        .map(
-                                          (label) => Text(
-                                            label,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            localization.player_one_name,
                                             style: GoogleFonts.roboto(
                                               color: Apptheme.silver,
-                                              fontSize: FontSizeManager.tiny,
+                                              fontSize:
+                                                  FontSizeManager.bodySmall,
                                               fontWeight:
-                                                  FontWeightManager.light,
+                                                  FontWeightManager.regular,
                                             ),
                                           ),
-                                        )
-                                        .toList(),
-                                  ),
-
-                                  const SizedBox(height: 16),
-
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 10,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Apptheme.deepDarkNavy,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          difficultyModeContainerEmojis[_currentIndex],
-                                          style: TextStyle(fontSize: 40),
-                                        ),
-                                        Text(
-                                          sliderLabels[_currentIndex],
-                                          style: GoogleFonts.roboto(
-                                            color: Apptheme.silver,
-                                            fontSize: FontSizeManager.bodyLarge,
-                                            fontWeight:
-                                                FontWeightManager.semiBold,
+                                          const SizedBox(height: 8),
+                                          CustomTextField(
+                                            controller: playerOneNameController,
+                                            hintText: localization.enter_name,
                                           ),
-                                        ),
-                                        Text(
-                                          difficultyModeContainerQuotes[_currentIndex],
-                                          style: GoogleFonts.roboto(
-                                            color: Apptheme.silver,
-                                            fontSize: FontSizeManager.caption,
-                                            fontWeight: FontWeightManager.light,
+
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            localization.bot_difficulty,
+                                            style: GoogleFonts.roboto(
+                                              color: Apptheme.silver,
+                                              fontSize:
+                                                  FontSizeManager.bodySmall,
+                                              fontWeight:
+                                                  FontWeightManager.regular,
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                          const SizedBox(height: 8),
+                                        ],
+                                      ),
                                     ),
-                                  ),
 
-                                  const SizedBox(height: 16),
+                                    DifficultySelector(),
 
-                                  CustomButton(
-                                    hasPrefixIcon: true,
-                                    icon: CupertinoIcons.play,
-                                    backgroundColor: Apptheme.lightYellow,
-                                    shadowColor: Apptheme.shadowYellow,
-                                    text: localization.flip_coin_and_start,
-                                    onPressed: () {
-                                      VarManager.playerOneName =
-                                          playerOneNameController.text.isEmpty
-                                          ? context.read<SettingsBloc>().state.model.language == 'en' ? 'Player 1' : 'اللاعب 1'
-                                          : playerOneNameController.text;
-                                      Navigator.of(context).pushNamed(
-                                        FlippingCoinScreen.routeName,
-                                        arguments: {
-                                          'screenFromName':
-                                              localization.bot_challenge,
-                                          'playerOneName':
-                                              playerOneNameController
-                                                  .text
-                                                  .isEmpty
-                                              ? context
-                                                            .read<
-                                                              SettingsBloc
-                                                            >()
-                                                            .state
-                                                            .model
-                                                            .language ==
-                                                        'en'
-                                                    ? 'Player 1'
-                                                    : 'اللاعب 1'
-                                              : playerOneNameController.text,
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ],
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          CustomButton(
+                                            hasPrefixIcon: true,
+                                            icon: CupertinoIcons.play,
+                                            backgroundColor:
+                                                Apptheme.lightYellow,
+                                            shadowColor: Apptheme.shadowYellow,
+                                            text: localization
+                                                .flip_coin_and_start,
+                                            onPressed: () {
+                                              VarManager.playerOneName =
+                                                  playerOneNameController
+                                                      .text
+                                                      .isEmpty
+                                                  ? context
+                                                                .read<
+                                                                  SettingsBloc
+                                                                >()
+                                                                .state
+                                                                .model
+                                                                .language ==
+                                                            'en'
+                                                        ? 'Player 1'
+                                                        : 'اللاعب 1'
+                                                  : playerOneNameController
+                                                        .text;
+
+                                              context.pushNamedTransition(
+                                                routeName: FlippingCoinScreen
+                                                    .routeName,
+                                                type: PageTransitionType.fade,
+                                                curve: Curves.easeInOut,
+                                                duration: Duration(
+                                                  milliseconds: 300,
+                                                ),
+                                                arguments: {
+                                                  'screenFromName': localization
+                                                      .bot_challenge,
+                                                  'playerOneName':
+                                                      playerOneNameController
+                                                          .text
+                                                          .isEmpty
+                                                      ? context
+                                                                    .read<
+                                                                      SettingsBloc
+                                                                    >()
+                                                                    .state
+                                                                    .model
+                                                                    .language ==
+                                                                'en'
+                                                            ? 'Player 1'
+                                                            : 'اللاعب 1'
+                                                      : playerOneNameController
+                                                            .text,
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                          )
+                          .animate()
+                          .fadeIn(
+                            begin: 0,
+                            delay: Duration(milliseconds: 200),
+                            duration: Duration(milliseconds: 600),
+                            curve: Curves.easeInOut,
+                          )
+                          .slideY(
+                            begin: 0.1,
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          ),
                 ),
               ],
             ),

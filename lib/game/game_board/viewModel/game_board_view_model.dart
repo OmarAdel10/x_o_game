@@ -108,9 +108,7 @@ class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
           );
 
           playerOneScore++;
-
         } else {
-
           statBloc.add(
             RecentGamesEvent(
               modeName: _modeName(),
@@ -121,14 +119,11 @@ class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
           );
 
           botScore++;
-
         }
       } else {
-
         statBloc.add(PlayerVsPlayerEvent());
 
         if (event.winnerSymbol == playerOneSymbol) {
-
           statBloc.add(
             RecentGamesEvent(
               modeName: _modeName(),
@@ -139,9 +134,7 @@ class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
           );
 
           playerOneScore++;
-
         } else {
-
           statBloc.add(
             RecentGamesEvent(
               modeName: _modeName(),
@@ -152,7 +145,6 @@ class GameBoardBloc extends Bloc<GameBoardEvents, GameBoardState> {
           );
 
           playerTwoScore++;
-
         }
       }
 
