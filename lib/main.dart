@@ -35,6 +35,8 @@ Future<void> main() async {
   runApp(const XOGame());
 }
 
+final RouteObserver<ModalRoute> routeObserver = RouteObserver<ModalRoute>();
+
 class XOGame extends StatelessWidget {
   const XOGame({super.key});
 
@@ -51,12 +53,13 @@ class XOGame extends StatelessWidget {
         child: BlocBuilder<SettingsBloc, SettingsState>(
           builder: (context, state) {
             return MaterialApp(
+              navigatorObservers: [routeObserver],
               debugShowCheckedModeBanner: false,
               locale: Locale(state.model.language),
               routes: {
                 HomeScreen.routeName: (_) => const HomeScreen(),
                 PlayerVsPlayerScreen.routeName: (_) => PlayerVsPlayerScreen(),
-                PlayerVsBotScreen.routeName: (_) => const PlayerVsBotScreen(),
+                PlayerVsBotScreen.routeName: (_) => PlayerVsBotScreen(),
                 SettingsScreen.routeName: (_) => const SettingsScreen(),
                 StatisticsScreen.routeName: (_) => const StatisticsScreen(),
                 FlippingCoinScreen.routeName: (_) => const FlippingCoinScreen(),

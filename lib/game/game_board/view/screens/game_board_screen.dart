@@ -1,8 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import 'package:x_o_game/game/game_board/view/widgets/grid_container_item.dart';
@@ -99,9 +101,12 @@ class GameBoardScreen extends StatelessWidget {
                             shadowColor: Colors.transparent,
                             text: localization.quit,
                             onPressed: () {
-                              Navigator.of(context)
-                                  .pushReplacementNamed(HomeScreen.routeName)
-                                  .then(
+                              context.pushReplacementTransition(
+                                type: PageTransitionType.fade,
+                                child: HomeScreen(),
+                                curve: Curves.easeInOut,
+                                duration: Duration(milliseconds: 300),
+                              ).then(
                                     (_) => gameBloc.add(GameBoardNavToHome()),
                                   );
                             },
@@ -159,8 +164,13 @@ class GameBoardScreen extends StatelessWidget {
                             shadowColor: Colors.transparent,
                             text: localization.quit,
                             onPressed: () {
-                              Navigator.of(context)
-                                  .pushReplacementNamed(HomeScreen.routeName)
+                              context
+                                  .pushReplacementTransition(
+                                    type: PageTransitionType.fade,
+                                    child: HomeScreen(),
+                                    curve: Curves.easeInOut,
+                                    duration: Duration(milliseconds: 300),
+                                  )
                                   .then(
                                     (_) => gameBloc.add(GameBoardNavToHome()),
                                   );
@@ -204,19 +214,139 @@ class GameBoardScreen extends StatelessWidget {
                 children: [
                   SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      BlocBuilder<GameBoardBloc, GameBoardState>(
-                        builder: (context, state) {
-                          final gameBloc = context.read<GameBoardBloc>();
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.of(context)
-                                  .pushReplacementNamed(HomeScreen.routeName)
-                                  .then(
-                                    (_) => gameBloc.add(GameBoardNavToHome()),
-                                  );
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          BlocBuilder<GameBoardBloc, GameBoardState>(
+                            builder: (context, state) {
+                              final gameBloc = context.read<GameBoardBloc>();
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context)
+                                      .pushReplacementNamed(
+                                        HomeScreen.routeName,
+                                      )
+                                      .then(
+                                        (_) =>
+                                            gameBloc.add(GameBoardNavToHome()),
+                                      );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Apptheme.silver,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Icon(
+                                    context
+                                                .read<SettingsBloc>()
+                                                .state
+                                                .model
+                                                .language ==
+                                            'en'
+                                        ? CupertinoIcons.arrow_left
+                                        : CupertinoIcons.arrow_right,
+                                    size: 24,
+                                    color: Apptheme.primary,
+                                  ),
+                                ),
+                              );
                             },
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Apptheme.semiDarkNavy,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Apptheme.shadowDark,
+                                  offset: const Offset(0, 6),
+                                  blurRadius: 0,
+                                ),
+                              ],
+                            ),
+                            child: BlocBuilder<GameBoardBloc, GameBoardState>(
+                              builder: (context, state) {
+                                return state is GameBoardWin
+                                    ? AutoSizeText(
+                                        localization.wins,
+                                        style: GoogleFonts.roboto(
+                                          color: Apptheme.silver,
+                                          fontSize: FontSizeManager.caption,
+                                          fontWeight:
+                                              FontWeightManager.semiBold,
+                                        ),
+                                      )
+                                    : state is GameBoardTies
+                                    ? AutoSizeText(
+                                        localization.tie,
+                                        style: GoogleFonts.roboto(
+                                          color: Apptheme.silver,
+                                          fontSize: FontSizeManager.caption,
+                                          fontWeight:
+                                              FontWeightManager.semiBold,
+                                        ),
+                                      )
+                                    : Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          context
+                                                      .read<SettingsBloc>()
+                                                      .state
+                                                      .model
+                                                      .language ==
+                                                  'en'
+                                              ? const SizedBox()
+                                              : AutoSizeText(
+                                                  localization.turn,
+                                                  style: GoogleFonts.roboto(
+                                                    color: Apptheme.silver,
+                                                    fontSize:
+                                                        FontSizeManager.caption,
+                                                    fontWeight:
+                                                        FontWeightManager
+                                                            .semiBold,
+                                                  ),
+                                                ),
+                                          Image.asset(
+                                            context
+                                                    .read<GameBoardBloc>()
+                                                    .round
+                                                    .isOdd
+                                                ? AssetsManager.x
+                                                : AssetsManager.o,
+                                            width: 24,
+                                            height: 24,
+                                            fit: BoxFit.fill,
+                                          ),
+                                          context
+                                                      .read<SettingsBloc>()
+                                                      .state
+                                                      .model
+                                                      .language ==
+                                                  'en'
+                                              ? AutoSizeText(
+                                                  localization.turn,
+                                                  style: GoogleFonts.roboto(
+                                                    color: Apptheme.silver,
+                                                    fontSize:
+                                                        FontSizeManager.caption,
+                                                    fontWeight:
+                                                        FontWeightManager
+                                                            .semiBold,
+                                                  ),
+                                                )
+                                              : const SizedBox(),
+                                        ],
+                                      );
+                              },
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => context.read<GameBoardBloc>().add(
+                              GameBoardReset(),
+                            ),
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
@@ -224,125 +354,26 @@ class GameBoardScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
-                                context
-                                            .read<SettingsBloc>()
-                                            .state
-                                            .model
-                                            .language ==
-                                        'en'
-                                    ? CupertinoIcons.arrow_left
-                                    : CupertinoIcons.arrow_right,
+                                CupertinoIcons.restart,
                                 size: 24,
                                 color: Apptheme.primary,
                               ),
                             ),
-                          );
-                        },
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Apptheme.semiDarkNavy,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Apptheme.shadowDark,
-                              offset: const Offset(0, 6),
-                              blurRadius: 0,
-                            ),
-                          ],
-                        ),
-                        child: BlocBuilder<GameBoardBloc, GameBoardState>(
-                          builder: (context, state) {
-                            return state is GameBoardWin
-                                ? AutoSizeText(
-                                    localization.wins,
-                                    style: GoogleFonts.roboto(
-                                      color: Apptheme.silver,
-                                      fontSize: FontSizeManager.caption,
-                                      fontWeight: FontWeightManager.semiBold,
-                                    ),
-                                  )
-                                : state is GameBoardTies
-                                ? AutoSizeText(
-                                    localization.tie,
-                                    style: GoogleFonts.roboto(
-                                      color: Apptheme.silver,
-                                      fontSize: FontSizeManager.caption,
-                                      fontWeight: FontWeightManager.semiBold,
-                                    ),
-                                  )
-                                : Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      context
-                                                  .read<SettingsBloc>()
-                                                  .state
-                                                  .model
-                                                  .language ==
-                                              'en'
-                                          ? const SizedBox()
-                                          : AutoSizeText(
-                                              localization.turn,
-                                              style: GoogleFonts.roboto(
-                                                color: Apptheme.silver,
-                                                fontSize:
-                                                    FontSizeManager.caption,
-                                                fontWeight:
-                                                    FontWeightManager.semiBold,
-                                              ),
-                                            ),
-                                      Image.asset(
-                                        context
-                                                .read<GameBoardBloc>()
-                                                .round
-                                                .isOdd
-                                            ? AssetsManager.x
-                                            : AssetsManager.o,
-                                        width: 24,
-                                        height: 24,
-                                        fit: BoxFit.fill,
-                                      ),
-                                      context
-                                                  .read<SettingsBloc>()
-                                                  .state
-                                                  .model
-                                                  .language ==
-                                              'en'
-                                          ? AutoSizeText(
-                                              localization.turn,
-                                              style: GoogleFonts.roboto(
-                                                color: Apptheme.silver,
-                                                fontSize:
-                                                    FontSizeManager.caption,
-                                                fontWeight:
-                                                    FontWeightManager.semiBold,
-                                              ),
-                                            )
-                                          : const SizedBox(),
-                                    ],
-                                  );
-                          },
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () =>
-                            context.read<GameBoardBloc>().add(GameBoardReset()),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Apptheme.silver,
-                            borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Icon(
-                            CupertinoIcons.restart,
-                            size: 24,
-                            color: Apptheme.primary,
-                          ),
-                        ),
+                        ],
+                      )
+                      .animate()
+                      .fadeIn(
+                        begin: 0,
+                        delay: Duration(milliseconds: 200),
+                        duration: Duration(milliseconds: 600),
+                        curve: Curves.easeInOut,
+                      )
+                      .slideY(
+                        begin: -0.3,
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
                       ),
-                    ],
-                  ),
 
                   const SizedBox(height: 32),
                   SizedBox(
@@ -391,256 +422,289 @@ class GameBoardScreen extends StatelessWidget {
 
                   const SizedBox(height: 32),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Apptheme.lightBlue,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                height:
-                                    MediaQuery.sizeOf(context).height * 0.066,
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: Apptheme.semiDarkNavy,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Apptheme.shadowDark,
-                                      offset: const Offset(0, 3),
-                                      blurRadius: 0,
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  children: [
-                                    AutoSizeText(
-                                      VarManager.playerOneName,
-                                      maxLines: 1,
-                                      minFontSize: FontSizeManager.caption,
-                                      style: GoogleFonts.roboto(
-                                        color: Apptheme.lightBlue,
-                                        fontSize: FontSizeManager.bodySmall,
-                                        fontWeight: FontWeightManager.semiBold,
-                                      ),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          '[ ',
-                                          maxLines: 1,
-                                          style: GoogleFonts.roboto(
-                                            color: Apptheme.lightBlue,
-                                            fontSize: FontSizeManager.bodySmall,
-                                            fontWeight: FontWeightManager.bold,
-                                          ),
-                                        ),
-                                        Image.asset(
-                                          VarManager.playerOneSymbol == 'x'
-                                              ? AssetsManager.x
-                                              : AssetsManager.o,
-                                          width: 17,
-                                          height: 17,
-                                          fit: BoxFit.fill,
-                                        ),
-                                        Text(
-                                          ' ]',
-                                          maxLines: 1,
-                                          style: GoogleFonts.roboto(
-                                            color: Apptheme.lightBlue,
-                                            fontSize: FontSizeManager.bodySmall,
-                                            fontWeight: FontWeightManager.bold,
-                                          ),
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Apptheme.lightBlue,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    height:
+                                        MediaQuery.sizeOf(context).height *
+                                        0.07,
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Apptheme.semiDarkNavy,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Apptheme.shadowDark,
+                                          offset: const Offset(0, 3),
+                                          blurRadius: 0,
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              BlocBuilder<GameBoardBloc, GameBoardState>(
-                                builder: (context, state) {
-                                  return Text(
-                                    '${context.read<GameBoardBloc>().playerOneScore}',
-                                    style: GoogleFonts.roboto(
-                                      color: Apptheme.primary,
-                                      fontSize: FontSizeManager.mediumNumber,
-                                      fontWeight: FontWeightManager.bold,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Apptheme.silver,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                height:
-                                    MediaQuery.sizeOf(context).height * 0.066,
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: Apptheme.semiDarkNavy,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Apptheme.shadowDark,
-                                      offset: const Offset(0, 3),
-                                      blurRadius: 0,
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
-                                  child: AutoSizeText(
-                                    'Ties',
-                                    maxLines: 1,
-                                    style: GoogleFonts.roboto(
-                                      color: Apptheme.silver,
-                                      fontSize: FontSizeManager.bodySmall,
-                                      fontWeight: FontWeightManager.semiBold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              BlocBuilder<GameBoardBloc, GameBoardState>(
-                                builder: (context, state) {
-                                  return Text(
-                                    '${context.read<GameBoardBloc>().tiesScore}',
-                                    style: GoogleFonts.roboto(
-                                      color: Apptheme.primary,
-                                      fontSize: FontSizeManager.mediumNumber,
-                                      fontWeight: FontWeightManager.bold,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Apptheme.lightYellow,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                height:
-                                    MediaQuery.sizeOf(context).height * 0.066,
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color: Apptheme.semiDarkNavy,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Apptheme.shadowDark,
-                                      offset: const Offset(0, 3),
-                                      blurRadius: 0,
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  children: [
-                                    BlocBuilder<GameBoardBloc, GameBoardState>(
-                                      builder: (context, state) {
-                                        return AutoSizeText(
-                                          context
-                                                  .read<GameBoardBloc>()
-                                                  .isPlayerVsBot
-                                              ? VarManager.botName
-                                              : VarManager.playerTwoName,
+                                    child: Column(
+                                      children: [
+                                        AutoSizeText(
+                                          VarManager.playerOneName,
                                           maxLines: 1,
                                           minFontSize: FontSizeManager.caption,
                                           style: GoogleFonts.roboto(
-                                            color: Apptheme.lightYellow,
+                                            color: Apptheme.lightBlue,
                                             fontSize: FontSizeManager.bodySmall,
                                             fontWeight:
                                                 FontWeightManager.semiBold,
                                           ),
-                                        );
-                                      },
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          '[ ',
-                                          maxLines: 1,
-                                          style: GoogleFonts.roboto(
-                                            color: Apptheme.lightYellow,
-                                            fontSize: FontSizeManager.bodySmall,
-                                            fontWeight: FontWeightManager.bold,
-                                          ),
                                         ),
-                                        Image.asset(
-                                          VarManager.playerTwoSymbol == 'x'
-                                              ? AssetsManager.x
-                                              : AssetsManager.o,
-                                          width: 17,
-                                          height: 17,
-                                          fit: BoxFit.fill,
-                                        ),
-                                        Text(
-                                          ' ]',
-                                          maxLines: 1,
-                                          style: GoogleFonts.roboto(
-                                            color: Apptheme.lightYellow,
-                                            fontSize: FontSizeManager.bodySmall,
-                                            fontWeight: FontWeightManager.bold,
-                                          ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              '[ ',
+                                              maxLines: 1,
+                                              style: GoogleFonts.roboto(
+                                                color: Apptheme.lightBlue,
+                                                fontSize:
+                                                    FontSizeManager.bodySmall,
+                                                fontWeight:
+                                                    FontWeightManager.bold,
+                                              ),
+                                            ),
+                                            Image.asset(
+                                              VarManager.playerOneSymbol == 'x'
+                                                  ? AssetsManager.x
+                                                  : AssetsManager.o,
+                                              width: 17,
+                                              height: 17,
+                                              fit: BoxFit.fill,
+                                            ),
+                                            Text(
+                                              ' ]',
+                                              maxLines: 1,
+                                              style: GoogleFonts.roboto(
+                                                color: Apptheme.lightBlue,
+                                                fontSize:
+                                                    FontSizeManager.bodySmall,
+                                                fontWeight:
+                                                    FontWeightManager.bold,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  BlocBuilder<GameBoardBloc, GameBoardState>(
+                                    builder: (context, state) {
+                                      return Text(
+                                        '${context.read<GameBoardBloc>().playerOneScore}',
+                                        style: GoogleFonts.roboto(
+                                          color: Apptheme.primary,
+                                          fontSize:
+                                              FontSizeManager.mediumNumber,
+                                          fontWeight: FontWeightManager.bold,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 5),
-                              BlocBuilder<GameBoardBloc, GameBoardState>(
-                                builder: (context, state) {
-                                  return Text(
-                                    '${context.read<GameBoardBloc>().isPlayerVsBot ? context.read<GameBoardBloc>().botScore : context.read<GameBoardBloc>().playerTwoScore}',
-                                    style: GoogleFonts.roboto(
-                                      color: Apptheme.primary,
-                                      fontSize: FontSizeManager.mediumNumber,
-                                      fontWeight: FontWeightManager.bold,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Apptheme.silver,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    height:
+                                        MediaQuery.sizeOf(context).height *
+                                        0.07,
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Apptheme.semiDarkNavy,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Apptheme.shadowDark,
+                                          offset: const Offset(0, 3),
+                                          blurRadius: 0,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Center(
+                                      child: AutoSizeText(
+                                        'Ties',
+                                        maxLines: 1,
+                                        style: GoogleFonts.roboto(
+                                          color: Apptheme.silver,
+                                          fontSize: FontSizeManager.bodySmall,
+                                          fontWeight:
+                                              FontWeightManager.semiBold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  BlocBuilder<GameBoardBloc, GameBoardState>(
+                                    builder: (context, state) {
+                                      return Text(
+                                        '${context.read<GameBoardBloc>().tiesScore}',
+                                        style: GoogleFonts.roboto(
+                                          color: Apptheme.primary,
+                                          fontSize:
+                                              FontSizeManager.mediumNumber,
+                                          fontWeight: FontWeightManager.bold,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Apptheme.lightYellow,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    height:
+                                        MediaQuery.sizeOf(context).height *
+                                        0.07,
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Apptheme.semiDarkNavy,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Apptheme.shadowDark,
+                                          offset: const Offset(0, 3),
+                                          blurRadius: 0,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        BlocBuilder<
+                                          GameBoardBloc,
+                                          GameBoardState
+                                        >(
+                                          builder: (context, state) {
+                                            return AutoSizeText(
+                                              context
+                                                      .read<GameBoardBloc>()
+                                                      .isPlayerVsBot
+                                                  ? VarManager.botName
+                                                  : VarManager.playerTwoName,
+                                              maxLines: 1,
+                                              minFontSize:
+                                                  FontSizeManager.caption,
+                                              style: GoogleFonts.roboto(
+                                                color: Apptheme.lightYellow,
+                                                fontSize:
+                                                    FontSizeManager.bodySmall,
+                                                fontWeight:
+                                                    FontWeightManager.semiBold,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              '[ ',
+                                              maxLines: 1,
+                                              style: GoogleFonts.roboto(
+                                                color: Apptheme.lightYellow,
+                                                fontSize:
+                                                    FontSizeManager.bodySmall,
+                                                fontWeight:
+                                                    FontWeightManager.bold,
+                                              ),
+                                            ),
+                                            Image.asset(
+                                              VarManager.playerTwoSymbol == 'x'
+                                                  ? AssetsManager.x
+                                                  : AssetsManager.o,
+                                              width: 17,
+                                              height: 17,
+                                              fit: BoxFit.fill,
+                                            ),
+                                            Text(
+                                              ' ]',
+                                              maxLines: 1,
+                                              style: GoogleFonts.roboto(
+                                                color: Apptheme.lightYellow,
+                                                fontSize:
+                                                    FontSizeManager.bodySmall,
+                                                fontWeight:
+                                                    FontWeightManager.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  BlocBuilder<GameBoardBloc, GameBoardState>(
+                                    builder: (context, state) {
+                                      return Text(
+                                        '${context.read<GameBoardBloc>().isPlayerVsBot ? context.read<GameBoardBloc>().botScore : context.read<GameBoardBloc>().playerTwoScore}',
+                                        style: GoogleFonts.roboto(
+                                          color: Apptheme.primary,
+                                          fontSize:
+                                              FontSizeManager.mediumNumber,
+                                          fontWeight: FontWeightManager.bold,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                      .animate()
+                      .fadeIn(
+                        begin: 0,
+                        delay: Duration(milliseconds: 200),
+                        duration: Duration(milliseconds: 600),
+                        curve: Curves.easeInOut,
+                      )
+                      .slideY(
+                        begin: 0.3,
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
                       ),
-                    ],
-                  ),
                 ],
               ),
             ),

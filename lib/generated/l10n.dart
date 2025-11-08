@@ -264,10 +264,10 @@ class S {
     );
   }
 
-  /// `Enter Name ( or playas as Guest )`
+  /// `Enter Name ( or play as Guest )`
   String get enter_name {
     return Intl.message(
-      'Enter Name ( or playas as Guest )',
+      'Enter Name ( or play as Guest )',
       name: 'enter_name',
       desc: '',
       args: [],
