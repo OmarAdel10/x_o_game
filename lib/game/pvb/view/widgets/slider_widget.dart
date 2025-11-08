@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:x_o_game/shared/apptheme.dart';
 
 class SliderWidget extends StatefulWidget {

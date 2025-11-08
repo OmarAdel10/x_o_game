@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:equatable/equatable.dart';
-import 'package:x_o_game/shared/apptheme.dart';
 
 class RecentGamesModel extends Equatable {
   final String modeName;
@@ -48,7 +47,7 @@ class RecentGamesModel extends Equatable {
       modeName: map['modeName'] as String,
       gameResult: map['gameResult'] as String,
       gameDate: DateTime.fromMillisecondsSinceEpoch(map['gameDate'] as int),
-      gameResultColor: Color(map['gameResultColor'] as int) ?? Apptheme.silver,
+      gameResultColor: Color(map['gameResultColor'] as int),
     );
   }
 

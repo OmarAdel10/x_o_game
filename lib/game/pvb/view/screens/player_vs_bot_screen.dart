@@ -7,8 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:x_o_game/game/flipping_coin/view/screens/flipping_coin_screen.dart';
 import 'package:x_o_game/game/pvb/view/widgets/difficulty_selector.dart';
-import 'package:x_o_game/game/pvb/view/widgets/slider_components_widget.dart';
-import 'package:x_o_game/game/pvb/view/widgets/slider_widget.dart';
 import 'package:x_o_game/generated/l10n.dart';
 import 'package:x_o_game/home/settings/viewModel/settings_view_model.dart';
 import 'package:x_o_game/shared/apptheme.dart';
