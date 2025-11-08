@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:x_o_game/game/game_board/view/screens/game_board_screen.dart';
 import 'package:x_o_game/generated/l10n.dart';
 import 'package:x_o_game/home/settings/viewModel/settings_view_model.dart';
@@ -57,12 +58,17 @@ class _FlippingCoinScreenState extends State<FlippingCoinScreen> {
 
   Future<void> flipThenNavigate() async {
     await flip();
-    
+
     await Future.delayed(Duration(seconds: 1));
-    Navigator.of(context).pushReplacementNamed(
-      GameBoardScreen.routeName,
-      arguments: {'screenName': screenName},
-    );
+    if (mounted) {
+      context.pushReplacementTransition(
+        type: PageTransitionType.fade,
+        child: GameBoardScreen(),
+        curve: Curves.easeInOut,
+        duration: Duration(milliseconds: 300),
+        settings: RouteSettings(arguments: {'screenName': screenName}),
+      );
+    }
   }
 
   @override

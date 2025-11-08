@@ -47,7 +47,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "easy": MessageLookupByLibrary.simpleMessage("Easy"),
     "english": MessageLookupByLibrary.simpleMessage("English"),
     "enter_name": MessageLookupByLibrary.simpleMessage(
-      "Enter Name ( or playas as Guest )",
+      "Enter Name ( or play as Guest )",
     ),
     "flip_coin_and_start": MessageLookupByLibrary.simpleMessage(
       "Flip Coin & Start",
